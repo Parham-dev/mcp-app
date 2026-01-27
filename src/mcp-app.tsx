@@ -62,6 +62,18 @@ function McpApp() {
   // Apply host styles (theme, CSS variables, fonts)
   useHostStyles(app);
 
+  // Apply theme class to document for CSS dark mode support
+  useEffect(() => {
+    if (hostContext?.theme) {
+      document.documentElement.setAttribute('data-theme', hostContext.theme);
+      if (hostContext.theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    }
+  }, [hostContext?.theme]);
+
   useEffect(() => {
     if (app) {
       setHostContext(app.getHostContext());

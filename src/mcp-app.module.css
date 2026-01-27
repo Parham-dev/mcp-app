@@ -7,6 +7,45 @@
   color: var(--color-text-primary, #1a1a1a);
 }
 
+/* Dark theme support */
+:global([data-theme="dark"]) .container,
+:global(.dark) .container {
+  background: var(--color-background-primary, #1e1e1e);
+  color: var(--color-text-primary, #e0e0e0);
+}
+
+:global([data-theme="dark"]) .card,
+:global(.dark) .card {
+  background: var(--color-background-secondary, #2d2d2d);
+  border-color: var(--color-border-primary, #404040);
+}
+
+:global([data-theme="dark"]) .greeting,
+:global([data-theme="dark"]) .title,
+:global(.dark) .greeting,
+:global(.dark) .title {
+  color: var(--color-text-primary, #e0e0e0);
+}
+
+:global([data-theme="dark"]) .subtitle,
+:global([data-theme="dark"]) .meta,
+:global(.dark) .subtitle,
+:global(.dark) .meta {
+  color: var(--color-text-secondary, #a0a0a0);
+}
+
+:global([data-theme="dark"]) .meta code,
+:global(.dark) .meta code {
+  background: var(--color-background-tertiary, #3d3d3d);
+}
+
+:global([data-theme="dark"]) .buttonSecondary,
+:global(.dark) .buttonSecondary {
+  background: var(--color-background-secondary, #2d2d2d);
+  color: var(--color-text-primary, #e0e0e0);
+  border-color: var(--color-border-primary, #404040);
+}
+
 .header {
   margin-bottom: var(--spacing-lg, 24px);
 }
