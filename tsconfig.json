@@ -16,5 +16,5 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "server.ts"]
+  "include": ["apps/**/*.ts", "apps/**/*.tsx", "main.ts", "app-registry.ts"]
 }

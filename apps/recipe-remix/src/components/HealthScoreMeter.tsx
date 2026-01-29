@@ -1,5 +1,5 @@
 import { getHealthColor } from "../utils/helpers";
-import styles from "../mcp-app.module.css";
+import styles from "../../mcp-app.module.css";
 
 interface HealthScoreMeterProps {
   score: number;

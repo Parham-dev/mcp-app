@@ -1,110 +1,104 @@
 /**
- * Entry point for running the MCP server.
- * Run with: npx mcp-app-template
- * Or: node dist/index.js [--stdio]
+ * Multi-App MCP Server Entry Point
+ * Serves all registered MCP apps from a single deployment
+ * 
+ * Each app is available at: /{app-id}/mcp
+ * Example: /recipe-remix/mcp, /weather/mcp, etc.
  */
 
 import { createMcpExpressApp } from "@modelcontextprotocol/sdk/server/express.js";
-import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import cors from "cors";
 import type { Request, Response } from "express";
-import { createServer } from "./server.js";
+import { apps, getApp } from "./app-registry.js";
 
-/**
- * Finds an available port, starting from the preferred port.
- */
-async function findAvailablePort(preferredPort: number, maxAttempts = 10): Promise<number> {
-  const net = await import("node:net");
+const port = parseInt(process.env.PORT ?? "3001", 10);
+
+const app = createMcpExpressApp({ host: "0.0.0.0" });
+app.use(cors());
+
+// Health check endpoint
+app.get("/health", (_req: Request, res: Response) => {
+  res.status(200).json({ status: "ok", apps: apps.map(a => a.id) });
+});
+
+// Home page - list all available apps
+app.get("/", (_req: Request, res: Response) => {
+  const appList = apps.map(a => ({
+    id: a.id,
+    name: a.name,
+    description: a.description,
+    endpoint: `/${a.id}/mcp`,
+  }));
   
-  for (let i = 0; i < maxAttempts; i++) {
-    const port = preferredPort + i;
-    const isAvailable = await new Promise<boolean>((resolve) => {
-      const server = net.createServer();
-      server.once("error", () => resolve(false));
-      server.once("listening", () => {
-        server.close();
-        resolve(true);
-      });
-      server.listen(port, "0.0.0.0");
+  res.json({
+    name: "MCP App Store",
+    version: "1.0.0",
+    apps: appList,
+  });
+});
+
+// Handle POST requests for each app: /{app-id}/mcp
+app.post("/:appId/mcp", async (req: Request, res: Response) => {
+  const appDef = getApp(req.params.appId as string);
+  
+  if (!appDef) {
+    res.status(404).json({
+      jsonrpc: "2.0",
+      error: { code: -32000, message: `App not found: ${req.params.appId}` },
+      id: null,
     });
-    
-    if (isAvailable) return port;
+    return;
   }
-  
-  throw new Error(`No available port found (tried ${preferredPort}-${preferredPort + maxAttempts - 1})`);
-}
 
-/**
- * Starts an MCP server with Streamable HTTP transport in stateless mode.
- */
-export async function startStreamableHTTPServer(
-  createServer: () => McpServer,
-): Promise<void> {
-  const preferredPort = parseInt(process.env.PORT ?? "3001", 10);
-  
-  let port: number;
+  const server = appDef.createServer();
+  const transport = new StreamableHTTPServerTransport({
+    sessionIdGenerator: undefined,
+    enableJsonResponse: true,
+  });
+
+  res.on("close", () => {
+    transport.close().catch(() => {});
+    server.close().catch(() => {});
+  });
+
   try {
-    port = await findAvailablePort(preferredPort);
+    await server.connect(transport);
+    await transport.handleRequest(req, res, req.body);
   } catch (error) {
-    console.error("Failed to find available port:", error);
-    process.exit(1);
-  }
-  
-  if (port !== preferredPort) {
-    console.log(`⚠️  Port ${preferredPort} is busy, using port ${port} instead`);
-    console.log(`   Update your MCP config to: http://localhost:${port}/mcp`);
-  }
-
-  const app = createMcpExpressApp({ host: "0.0.0.0" });
-  app.use(cors());
-
-  app.all("/mcp", async (req: Request, res: Response) => {
-    const server = createServer();
-    const transport = new StreamableHTTPServerTransport({
-      sessionIdGenerator: undefined,
-    });
-
-    res.on("close", () => {
-      transport.close().catch(() => {});
-      server.close().catch(() => {});
-    });
-
-    try {
-      await server.connect(transport);
-      await transport.handleRequest(req, res, req.body);
-    } catch (error) {
-      console.error("MCP error:", error);
-      if (!res.headersSent) {
-        res.status(500).json({
-          jsonrpc: "2.0",
-          error: { code: -32603, message: "Internal server error" },
-          id: null,
-        });
-      }
+    console.error(`MCP error in ${appDef.id}:`, error);
+    if (!res.headersSent) {
+      res.status(500).json({
+        jsonrpc: "2.0",
+        error: { code: -32603, message: "Internal server error" },
+        id: null,
+      });
     }
+  }
+});
+
+// Handle GET/DELETE for app endpoints - return 405
+app.get("/:appId/mcp", (_req: Request, res: Response) => {
+  res.status(405).set("Allow", "POST").json({
+    jsonrpc: "2.0",
+    error: { code: -32000, message: "Method not allowed." },
+    id: null,
   });
+});
 
-  app.listen(port, () => {
-    console.log(`MCP App Template server running at http://localhost:${port}/mcp`);
+app.delete("/:appId/mcp", (_req: Request, res: Response) => {
+  res.status(405).json({
+    jsonrpc: "2.0",
+    error: { code: -32000, message: "Method not allowed." },
+    id: null,
   });
-}
+});
 
-/**
- * Starts an MCP server with stdio transport.
- */
-async function startStdioServer(): Promise<void> {
-  const server = createServer();
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-  console.error("MCP App Template server running on stdio");
-}
-
-// Main entry point
-const args = process.argv.slice(2);
-if (args.includes("--stdio")) {
-  startStdioServer().catch(console.error);
-} else {
-  startStreamableHTTPServer(createServer).catch(console.error);
-}
+app.listen(port, () => {
+  console.log(`\n🚀 MCP App Store running at http://localhost:${port}`);
+  console.log(`\n📦 Available apps:`);
+  for (const appDef of apps) {
+    console.log(`   - ${appDef.name}: http://localhost:${port}/${appDef.id}/mcp`);
+  }
+  console.log();
+});

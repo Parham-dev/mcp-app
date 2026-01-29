@@ -1,6 +1,6 @@
 import type { Recipe } from "../types/recipe";
 import { HealthScoreMeter } from "./HealthScoreMeter";
-import styles from "../mcp-app.module.css";
+import styles from "../../mcp-app.module.css";
 
 interface RecipeHeaderProps {
   recipe: Recipe;

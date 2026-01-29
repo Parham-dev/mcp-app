@@ -1,4 +1,4 @@
-import styles from "../mcp-app.module.css";
+import styles from "../../mcp-app.module.css";
 
 interface ServingsSliderProps {
   value: number;

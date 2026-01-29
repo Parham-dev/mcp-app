@@ -5,10 +5,13 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { z } from "zod";
 
-// Works both from source (server.ts) and compiled (dist/server.js)
-const DIST_DIR = import.meta.filename.endsWith(".ts")
-  ? path.join(import.meta.dirname, "dist")
-  : import.meta.dirname;
+// App metadata exports
+export const appId = "recipe-remix";
+export const appName = "Recipe Remix";
+export const appDescription = "AI-powered recipe assistant with beautiful UI";
+
+// Path to the built HTML file
+const HTML_PATH = path.join(import.meta.dirname, "../../dist/apps/recipe-remix/mcp-app.html");
 
 // Ingredient schema with category for emoji icons
 const IngredientSchema = z.object({
@@ -98,7 +101,7 @@ ${stepsList}`;
     resourceUri,
     { mimeType: RESOURCE_MIME_TYPE },
     async (): Promise<ReadResourceResult> => {
-      const html = await fs.readFile(path.join(DIST_DIR, "mcp-app.html"), "utf-8");
+      const html = await fs.readFile(HTML_PATH, "utf-8");
       return {
         contents: [{ uri: resourceUri, mimeType: RESOURCE_MIME_TYPE, text: html }],
       };

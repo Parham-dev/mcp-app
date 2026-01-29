@@ -14,8 +14,8 @@ import {
   RecipeHeader,
   ServingsSlider,
   StepsList,
-} from "./components";
-import type { Recipe, ScaledIngredient } from "./types/recipe";
+} from "./src/components";
+import type { Recipe, ScaledIngredient } from "./src/types/recipe";
 import styles from "./mcp-app.module.css";
 
 // Extract recipe from tool result

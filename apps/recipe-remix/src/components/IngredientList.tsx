@@ -1,6 +1,6 @@
 import type { ScaledIngredient } from "../types/recipe";
 import { capitalize, categoryEmojis } from "../utils/helpers";
-import styles from "../mcp-app.module.css";
+import styles from "../../mcp-app.module.css";
 
 interface IngredientListProps {
   ingredients: ScaledIngredient[];

@@ -1,5 +1,5 @@
 import type { Step } from "../types/recipe";
-import styles from "../mcp-app.module.css";
+import styles from "../../mcp-app.module.css";
 
 interface StepsListProps {
   steps: Step[];

@@ -1,4 +1,4 @@
-import styles from "../mcp-app.module.css";
+import styles from "../../mcp-app.module.css";
 
 export function EmptyState() {
   return (
