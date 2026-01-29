@@ -95,6 +95,16 @@ ${stepsList}`;
     },
   );
 
+  // CSP configuration for external images
+  const cspMeta = {
+    ui: {
+      csp: {
+        // Allow images from TheMealDB for ingredient photos
+        resourceDomains: ["https://www.themealdb.com"],
+      },
+    },
+  };
+
   // Register the resource, which returns the bundled HTML/JavaScript for the UI.
   registerAppResource(server,
     resourceUri,
@@ -103,7 +113,15 @@ ${stepsList}`;
     async (): Promise<ReadResourceResult> => {
       const html = await fs.readFile(HTML_PATH, "utf-8");
       return {
-        contents: [{ uri: resourceUri, mimeType: RESOURCE_MIME_TYPE, text: html }],
+        contents: [
+          // _meta must be on the content item, not the resource metadata
+          { 
+            uri: resourceUri, 
+            mimeType: RESOURCE_MIME_TYPE, 
+            text: html,
+            _meta: cspMeta,
+          },
+        ],
       };
     },
   );

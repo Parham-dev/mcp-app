@@ -15,6 +15,7 @@ import {
   ServingsSlider,
   StepsList,
 } from "./src/components";
+import { LoadingAnimation } from "./src/components/LoadingAnimation";
 import type { Recipe, ScaledIngredient } from "./src/types/recipe";
 import styles from "./mcp-app.module.css";
 
@@ -92,10 +93,7 @@ function McpApp() {
   if (!app) {
     return (
       <div className={styles.container}>
-        <div className={styles.loading}>
-          <div className={styles.loadingSpinner} />
-          <span>Connecting...</span>
-        </div>
+        <LoadingAnimation message="Connecting..." />
       </div>
     );
   }
