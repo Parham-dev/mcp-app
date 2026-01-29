@@ -22,6 +22,54 @@
 }
 
 /* Empty State */
+/* ============================================
+ * Animations
+ * ============================================ */
+
+/* Subtle floating animation for empty state icon */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* Fade in and slide up for content */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Pulse animation for active states */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* Spin animation for loading */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Stagger animation helper */
+@keyframes staggerFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ============================================
+ * Empty State
+ * ============================================ */
 .emptyState {
   display: flex;
   flex-direction: column;
@@ -30,6 +78,7 @@
   text-align: center;
   min-height: 60vh;
   padding: 2rem;
+  animation: fadeInUp 0.5s ease-out;
 }
 
 .emptyIcon {
@@ -42,6 +91,7 @@
   background-color: var(--vscode-input-background, #f0f0f0);
   border-radius: 50%;
   color: var(--vscode-textLink-foreground, #0066cc);
+  animation: float 3s ease-in-out infinite;
 }
 
 :global([data-theme="dark"]) .emptyIcon,
@@ -55,6 +105,7 @@
   font-weight: 600;
   margin: 0 0 0.5rem 0;
   color: var(--vscode-editor-foreground, inherit);
+  animation: fadeInUp 0.5s ease-out 0.1s both;
 }
 
 .emptyText {
@@ -62,6 +113,7 @@
   color: var(--vscode-descriptionForeground, #666666);
   margin: 0 0 1rem 0;
   max-width: 300px;
+  animation: fadeInUp 0.5s ease-out 0.2s both;
 }
 
 :global([data-theme="dark"]) .emptyText,
@@ -73,6 +125,7 @@
   font-size: 0.9rem;
   color: var(--vscode-textLink-foreground, #0066cc);
   font-style: italic;
+  animation: fadeInUp 0.5s ease-out 0.3s both;
 }
 
 :global([data-theme="dark"]) .emptyHint,
@@ -80,12 +133,15 @@
   color: var(--vscode-textLink-foreground, #3794ff);
 }
 
-/* Recipe Header */
+/* ============================================
+ * Recipe Header
+ * ============================================ */
 .recipeHeader {
   text-align: center;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid var(--vscode-input-border, #e0e0e0);
+  animation: fadeInUp 0.4s ease-out;
 }
 
 :global([data-theme="dark"]) .recipeHeader,
@@ -129,6 +185,11 @@
   border-radius: 20px;
   font-size: 0.8rem;
   font-weight: 500;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.timeBadge:hover {
+  transform: translateY(-2px);
 }
 
 .timeBadge svg {
@@ -192,7 +253,13 @@
 .healthBar {
   height: 100%;
   border-radius: 5px;
-  transition: width 0.5s ease, background-color 0.5s ease;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.5s ease;
+  animation: healthBarGrow 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes healthBarGrow {
+  from { transform: scaleX(0); transform-origin: left; }
+  to { transform: scaleX(1); transform-origin: left; }
 }
 
 .healthDescription {
@@ -281,10 +348,19 @@
   margin-top: 0.25rem;
 }
 
-/* Sections */
+/* ============================================
+ * Sections with entrance animations
+ * ============================================ */
 .section {
   margin-bottom: 1.5rem;
+  animation: fadeInUp 0.4s ease-out both;
 }
+
+/* Stagger sections - each section has increasing delay */
+.section:nth-child(1) { animation-delay: 0.1s; }
+.section:nth-child(2) { animation-delay: 0.2s; }
+.section:nth-child(3) { animation-delay: 0.3s; }
+.section:nth-child(4) { animation-delay: 0.4s; }
 
 .sectionTitle {
   display: flex;
@@ -318,6 +394,28 @@
   gap: 0.75rem;
   padding: 0.6rem 0;
   border-bottom: 1px solid var(--vscode-input-border, #eee);
+  animation: staggerFadeIn 0.3s ease-out both;
+  transition: background-color 0.15s ease;
+}
+
+/* Stagger ingredient items */
+.ingredientItem:nth-child(1) { animation-delay: 0.05s; }
+.ingredientItem:nth-child(2) { animation-delay: 0.1s; }
+.ingredientItem:nth-child(3) { animation-delay: 0.15s; }
+.ingredientItem:nth-child(4) { animation-delay: 0.2s; }
+.ingredientItem:nth-child(5) { animation-delay: 0.25s; }
+.ingredientItem:nth-child(6) { animation-delay: 0.3s; }
+.ingredientItem:nth-child(7) { animation-delay: 0.35s; }
+.ingredientItem:nth-child(8) { animation-delay: 0.4s; }
+.ingredientItem:nth-child(n+9) { animation-delay: 0.45s; }
+
+.ingredientItem:hover {
+  background-color: var(--vscode-list-hoverBackground, rgba(0, 0, 0, 0.04));
+}
+
+:global([data-theme="dark"]) .ingredientItem:hover,
+:global(.dark) .ingredientItem:hover {
+  background-color: var(--vscode-list-hoverBackground, rgba(255, 255, 255, 0.04));
 }
 
 :global([data-theme="dark"]) .ingredientItem,
@@ -335,6 +433,11 @@
   justify-content: center;
   width: 2rem;
   color: var(--vscode-textLink-foreground, #0066cc);
+  transition: transform 0.2s ease;
+}
+
+.ingredientItem:hover .ingredientIcon {
+  transform: scale(1.1);
 }
 
 :global([data-theme="dark"]) .ingredientIcon,
@@ -395,6 +498,25 @@
   gap: 0.75rem;
   padding: 1rem 0;
   border-bottom: 1px solid var(--vscode-input-border, #eee);
+  animation: staggerFadeIn 0.3s ease-out both;
+  transition: background-color 0.15s ease;
+}
+
+/* Stagger step items */
+.stepItem:nth-child(1) { animation-delay: 0.1s; }
+.stepItem:nth-child(2) { animation-delay: 0.2s; }
+.stepItem:nth-child(3) { animation-delay: 0.3s; }
+.stepItem:nth-child(4) { animation-delay: 0.4s; }
+.stepItem:nth-child(5) { animation-delay: 0.5s; }
+.stepItem:nth-child(n+6) { animation-delay: 0.6s; }
+
+.stepItem:hover {
+  background-color: var(--vscode-list-hoverBackground, rgba(0, 0, 0, 0.04));
+}
+
+:global([data-theme="dark"]) .stepItem:hover,
+:global(.dark) .stepItem:hover {
+  background-color: var(--vscode-list-hoverBackground, rgba(255, 255, 255, 0.04));
 }
 
 :global([data-theme="dark"]) .stepItem,
@@ -418,6 +540,16 @@
   font-weight: 700;
   font-size: 0.9rem;
   flex-shrink: 0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stepItem:hover .stepNumber {
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);
+}
+
+:global([data-theme="dark"]) .stepItem:hover .stepNumber {
+  box-shadow: 0 2px 8px rgba(55, 148, 255, 0.3);
 }
 
 .stepContent {
@@ -473,6 +605,7 @@
   border-radius: 0 8px 8px 0;
   font-style: italic;
   color: var(--vscode-descriptionForeground, #666666);
+  animation: fadeInUp 0.4s ease-out 0.4s both;
 }
 
 :global([data-theme="dark"]) .notes,
@@ -485,11 +618,28 @@
 /* Loading state */
 .loading {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 1rem;
   min-height: 200px;
   color: var(--vscode-descriptionForeground, #888888);
   font-size: 1rem;
+}
+
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--vscode-input-border, #e0e0e0);
+  border-top-color: var(--vscode-textLink-foreground, #0066cc);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+:global([data-theme="dark"]) .loadingSpinner,
+:global(.dark) .loadingSpinner {
+  border-color: var(--vscode-input-border, #444444);
+  border-top-color: var(--vscode-textLink-foreground, #3794ff);
 }
 
 /* Error state */

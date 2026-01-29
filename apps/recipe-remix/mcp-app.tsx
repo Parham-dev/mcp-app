@@ -92,7 +92,10 @@ function McpApp() {
   if (!app) {
     return (
       <div className={styles.container}>
-        <div className={styles.loading}>Connecting...</div>
+        <div className={styles.loading}>
+          <div className={styles.loadingSpinner} />
+          <span>Connecting...</span>
+        </div>
       </div>
     );
   }
