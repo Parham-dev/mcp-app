@@ -1,5 +1,7 @@
 import type { ScaledIngredient } from "../types/recipe";
-import { capitalize, categoryEmojis } from "../utils/helpers";
+import { capitalize } from "../utils/helpers";
+import { getCategoryIcon } from "../utils/categoryIcons";
+import { RefreshCw, iconPropsSm, iconProps, UtensilsCrossed } from "./icons";
 import styles from "../../mcp-app.module.css";
 
 interface IngredientListProps {
@@ -10,12 +12,14 @@ interface IngredientListProps {
 export function IngredientList({ ingredients, onSubstitute }: IngredientListProps) {
   return (
     <section className={styles.section}>
-      <h2 className={styles.sectionTitle}>🥘 Ingredients</h2>
+      <h2 className={styles.sectionTitle}>
+        <UtensilsCrossed {...iconProps} /> Ingredients
+      </h2>
       <ul className={styles.ingredientsList}>
         {ingredients.map((ing, idx) => (
           <li key={idx} className={styles.ingredientItem}>
-            <span className={styles.ingredientEmoji}>
-              {categoryEmojis[ing.category || "other"]}
+            <span className={styles.ingredientIcon}>
+              {getCategoryIcon(ing.category)}
             </span>
             <span className={styles.ingredientAmount}>
               {ing.scaledAmount} {ing.unit}
@@ -26,7 +30,7 @@ export function IngredientList({ ingredients, onSubstitute }: IngredientListProp
               onClick={() => onSubstitute(ing.name)}
               title="Ask AI for substitute"
             >
-              🔄
+              <RefreshCw {...iconPropsSm} />
             </button>
           </li>
         ))}

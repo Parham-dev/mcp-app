@@ -1,10 +1,13 @@
 import styles from "../../mcp-app.module.css";
+import { ChefHat, iconPropsLg } from "./icons";
 
 export function EmptyState() {
   return (
     <div className={styles.container}>
       <div className={styles.emptyState}>
-        <span className={styles.emptyIcon}>🍳</span>
+        <span className={styles.emptyIcon}>
+          <ChefHat {...iconPropsLg} size={48} />
+        </span>
         <h2 className={styles.emptyTitle}>Recipe Remix</h2>
         <p className={styles.emptyText}>
           Ask the AI for a recipe and it will appear here with an interactive UI!

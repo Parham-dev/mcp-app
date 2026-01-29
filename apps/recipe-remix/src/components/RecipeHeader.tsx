@@ -1,5 +1,6 @@
 import type { Recipe } from "../types/recipe";
 import { HealthScoreMeter } from "./HealthScoreMeter";
+import { UtensilsCrossed, Flame, Clock, iconPropsSm } from "./icons";
 import styles from "../../mcp-app.module.css";
 
 interface RecipeHeaderProps {
@@ -18,17 +19,17 @@ export function RecipeHeader({ recipe }: RecipeHeaderProps) {
       <div className={styles.timeBadges}>
         {recipe.prepTime && (
           <span className={styles.timeBadge}>
-            🔪 Prep: {recipe.prepTime} min
+            <UtensilsCrossed {...iconPropsSm} /> Prep: {recipe.prepTime} min
           </span>
         )}
         {recipe.cookTime && (
           <span className={styles.timeBadge}>
-            🔥 Cook: {recipe.cookTime} min
+            <Flame {...iconPropsSm} /> Cook: {recipe.cookTime} min
           </span>
         )}
         {recipe.prepTime && recipe.cookTime && (
           <span className={styles.timeBadge}>
-            ⏱️ Total: {recipe.prepTime + recipe.cookTime} min
+            <Clock {...iconPropsSm} /> Total: {recipe.prepTime + recipe.cookTime} min
           </span>
         )}
       </div>

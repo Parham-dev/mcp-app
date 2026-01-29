@@ -1,3 +1,4 @@
+import { Users, iconPropsSm } from "./icons";
 import styles from "../../mcp-app.module.css";
 
 interface ServingsSliderProps {
@@ -11,7 +12,7 @@ export function ServingsSlider({ value, onChange, min = 1, max = 12 }: ServingsS
   return (
     <div className={styles.servingsSection}>
       <label className={styles.servingsLabel}>
-        <span>Servings</span>
+        <span><Users {...iconPropsSm} /> Servings</span>
         <span className={styles.servingsValue}>{value}</span>
       </label>
       <input

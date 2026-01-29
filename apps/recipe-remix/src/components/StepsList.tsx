@@ -1,4 +1,5 @@
 import type { Step } from "../types/recipe";
+import { ChefHat, Timer, HelpCircle, iconProps, iconPropsSm } from "./icons";
 import styles from "../../mcp-app.module.css";
 
 interface StepsListProps {
@@ -9,7 +10,9 @@ interface StepsListProps {
 export function StepsList({ steps, onExplain }: StepsListProps) {
   return (
     <section className={styles.section}>
-      <h2 className={styles.sectionTitle}>👨‍🍳 Steps</h2>
+      <h2 className={styles.sectionTitle}>
+        <ChefHat {...iconProps} /> Steps
+      </h2>
       <ol className={styles.stepsList}>
         {steps.map((step, idx) => (
           <li key={idx} className={styles.stepItem}>
@@ -17,7 +20,9 @@ export function StepsList({ steps, onExplain }: StepsListProps) {
             <div className={styles.stepContent}>
               <p className={styles.stepInstruction}>{step.instruction}</p>
               {step.duration && (
-                <span className={styles.stepDuration}>⏱️ {step.duration} min</span>
+                <span className={styles.stepDuration}>
+                  <Timer {...iconPropsSm} /> {step.duration} min
+                </span>
               )}
             </div>
             <button
@@ -25,7 +30,7 @@ export function StepsList({ steps, onExplain }: StepsListProps) {
               onClick={() => onExplain(step.instruction)}
               title="Ask AI to explain"
             >
-              ❓
+              <HelpCircle {...iconPropsSm} />
             </button>
           </li>
         ))}
