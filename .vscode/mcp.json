@@ -1,7 +1,7 @@
 {
   "servers": {
-    "mcp-app-template": {
-      "type": "http",
+    "recipe-remix": {
+      "type": "sse",
       "url": "http://localhost:3001/mcp"
     }
   }

@@ -10,9 +10,33 @@ const DIST_DIR = import.meta.filename.endsWith(".ts")
   ? path.join(import.meta.dirname, "dist")
   : import.meta.dirname;
 
-// Input schema for the hello-world tool
-const HelloWorldInput = z.object({
-  name: z.string().optional().describe("Name to greet"),
+// Ingredient schema with category for emoji icons
+const IngredientSchema = z.object({
+  name: z.string().describe("Ingredient name"),
+  amount: z.number().describe("Amount for base servings"),
+  unit: z.string().describe("Unit of measurement (g, ml, cups, tbsp, pcs, etc.)"),
+  category: z.enum(["protein", "vegetable", "dairy", "grain", "spice", "sauce", "other"])
+    .optional()
+    .describe("Category for emoji icon"),
+});
+
+// Step schema
+const StepSchema = z.object({
+  instruction: z.string().describe("Step instruction"),
+  duration: z.number().optional().describe("Duration in minutes (if applicable)"),
+});
+
+// Main recipe input schema
+const RecipeInputSchema = z.object({
+  name: z.string().describe("Recipe name"),
+  description: z.string().optional().describe("Brief description of the dish"),
+  servings: z.number().default(4).describe("Number of servings"),
+  prepTime: z.number().optional().describe("Prep time in minutes"),
+  cookTime: z.number().optional().describe("Cook time in minutes"),
+  ingredients: z.array(IngredientSchema).describe("List of ingredients"),
+  steps: z.array(StepSchema).describe("Cooking steps"),
+  notes: z.string().optional().describe("Additional notes or tips"),
+  healthScore: z.number().min(0).max(10).describe("REQUIRED: Health rating from 0 (indulgent/unhealthy like fried food, desserts) to 10 (very healthy like salads, lean proteins). Always provide this value."),
 });
 
 /**
@@ -20,37 +44,50 @@ const HelloWorldInput = z.object({
  */
 export function createServer(): McpServer {
   const server = new McpServer({
-    name: "MCP App Template",
+    name: "Recipe Remix",
     version: "1.0.0",
   });
 
   // Two-part registration: tool + resource, tied together by the resource URI.
-  const resourceUri = "ui://hello-world/mcp-app.html";
+  const resourceUri = "ui://recipe-remix/mcp-app.html";
 
   // Register a tool with UI metadata. When the host calls this tool, it reads
   // `_meta.ui.resourceUri` to know which resource to fetch and render as an
   // interactive UI.
   registerAppTool(server,
-    "hello-world",
+    "show-recipe",
     {
-      title: "Hello World",
-      description: "A simple hello world MCP App that demonstrates the basics.",
-      inputSchema: HelloWorldInput,
+      title: "Recipe Remix",
+      description: "Display a recipe with beautiful UI. AI provides the full recipe (name, ingredients, steps) and the app renders it with interactive features like servings adjustment.",
+      inputSchema: RecipeInputSchema,
       _meta: { ui: { resourceUri } }, // Links this tool to its UI resource
     },
     async (args): Promise<CallToolResult> => {
-      const { name = "World" } = HelloWorldInput.parse(args);
-      const greeting = `Hello, ${name}!`;
-      const timestamp = new Date().toISOString();
+      const recipe = RecipeInputSchema.parse(args);
+      
+      // Create a text summary for the model
+      const ingredientsList = recipe.ingredients
+        .map(i => `- ${i.amount} ${i.unit} ${i.name}`)
+        .join("\n");
+      const stepsList = recipe.steps
+        .map((s, i) => `${i + 1}. ${s.instruction}`)
+        .join("\n");
+      
+      const summary = `Recipe: ${recipe.name}
+Servings: ${recipe.servings}
+${recipe.prepTime ? `Prep: ${recipe.prepTime} min` : ""}
+${recipe.cookTime ? `Cook: ${recipe.cookTime} min` : ""}
+
+Ingredients:
+${ingredientsList}
+
+Steps:
+${stepsList}`;
       
       return {
-        content: [{ type: "text", text: `${greeting} (at ${timestamp})` }],
+        content: [{ type: "text", text: summary }],
         // structuredContent is available to the UI but not sent to the model
-        structuredContent: {
-          greeting,
-          name,
-          timestamp,
-        },
+        structuredContent: recipe,
       };
     },
   );

@@ -1,37 +1,38 @@
 /**
- * MCP App Template - React UI Component
- * Demonstrates useApp hook, lifecycle handlers, and host styling.
+ * Recipe Remix - MCP App
+ * AI-powered recipe assistant with beautiful UI and smart interactions.
  */
 import type { App, McpUiHostContext } from "@modelcontextprotocol/ext-apps";
 import { useApp, useHostStyles } from "@modelcontextprotocol/ext-apps/react";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { StrictMode, useCallback, useEffect, useState } from "react";
+import { StrictMode, useCallback, useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
+
+import {
+  EmptyState,
+  IngredientList,
+  RecipeHeader,
+  ServingsSlider,
+  StepsList,
+} from "./components";
+import type { Recipe, ScaledIngredient } from "./types/recipe";
 import styles from "./mcp-app.module.css";
 
-interface StructuredContent {
-  greeting: string;
-  name: string;
-  timestamp: string;
-}
-
-function extractStructuredContent(result: CallToolResult): StructuredContent | null {
-  const structured = result.structuredContent as StructuredContent | undefined;
+// Extract recipe from tool result
+function extractRecipe(result: CallToolResult): Recipe | null {
+  const structured = result.structuredContent as Recipe | undefined;
   return structured ?? null;
 }
 
+// Main MCP App - handles connection and lifecycle
 function McpApp() {
   const [toolResult, setToolResult] = useState<CallToolResult | null>(null);
-  const [toolInput, setToolInput] = useState<{ name?: string } | null>(null);
   const [hostContext, setHostContext] = useState<McpUiHostContext | undefined>();
 
-  // useApp creates an App instance, registers handlers, and calls connect()
   const { app, error } = useApp({
-    appInfo: { name: "MCP App Template", version: "1.0.0" },
+    appInfo: { name: "Recipe Remix", version: "1.0.0" },
     capabilities: {},
     onAppCreated: (app) => {
-      // Register all handlers BEFORE connect() is called
-
       app.onteardown = async () => {
         console.info("App is being torn down");
         return {};
@@ -39,7 +40,6 @@ function McpApp() {
 
       app.ontoolinput = async (input) => {
         console.info("Received tool input:", input);
-        setToolInput(input.arguments as { name?: string });
       };
 
       app.ontoolresult = async (result) => {
@@ -59,17 +59,16 @@ function McpApp() {
     },
   });
 
-  // Apply host styles (theme, CSS variables, fonts)
   useHostStyles(app);
 
-  // Apply theme class to document for CSS dark mode support
+  // Apply theme to document
   useEffect(() => {
     if (hostContext?.theme) {
-      document.documentElement.setAttribute('data-theme', hostContext.theme);
-      if (hostContext.theme === 'dark') {
-        document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute("data-theme", hostContext.theme);
+      if (hostContext.theme === "dark") {
+        document.documentElement.classList.add("dark");
       } else {
-        document.documentElement.classList.remove('dark');
+        document.documentElement.classList.remove("dark");
       }
     }
   }, [hostContext?.theme]);
@@ -98,97 +97,98 @@ function McpApp() {
     );
   }
 
-  return (
-    <McpAppInner
-      app={app}
-      toolInput={toolInput}
-      toolResult={toolResult}
-      hostContext={hostContext}
-    />
-  );
+  return <RecipeApp app={app} toolResult={toolResult} />;
 }
 
-interface McpAppInnerProps {
+// Recipe App - displays recipe UI
+interface RecipeAppProps {
   app: App;
-  toolInput: { name?: string } | null;
   toolResult: CallToolResult | null;
-  hostContext?: McpUiHostContext;
 }
 
-function McpAppInner({ app, toolInput, toolResult, hostContext }: McpAppInnerProps) {
-  const [data, setData] = useState<StructuredContent | null>(null);
+function RecipeApp({ app, toolResult }: RecipeAppProps) {
+  const [recipe, setRecipe] = useState<Recipe | null>(null);
+  const [currentServings, setCurrentServings] = useState<number>(4);
 
+  // Extract recipe from tool result
   useEffect(() => {
     if (toolResult) {
-      const structured = extractStructuredContent(toolResult);
-      setData(structured);
+      const extracted = extractRecipe(toolResult);
+      if (extracted) {
+        setRecipe(extracted);
+        setCurrentServings(extracted.servings);
+      }
     }
   }, [toolResult]);
 
-  // Example: Call the tool again from the UI
-  const handleRefresh = useCallback(async () => {
-    try {
-      const result = await app.callServerTool({
-        name: "hello-world",
-        arguments: { name: toolInput?.name || "World" },
-      });
-      setData(extractStructuredContent(result));
-    } catch (e) {
-      console.error("Failed to refresh:", e);
-    }
-  }, [app, toolInput]);
+  // Calculate scaled ingredients
+  const scaledIngredients: ScaledIngredient[] = useMemo(() => {
+    if (!recipe) return [];
+    const scale = currentServings / recipe.servings;
+    return recipe.ingredients.map((ing) => ({
+      ...ing,
+      scaledAmount: Math.round(ing.amount * scale * 100) / 100,
+    }));
+  }, [recipe, currentServings]);
 
-  // Example: Send a message to the chat
-  const handleSendMessage = useCallback(async () => {
-    try {
-      await app.sendMessage({
-        role: "user",
-        content: [{ type: "text", text: `The current greeting is: ${data?.greeting}` }],
-      });
-    } catch (e) {
-      console.error("Failed to send message:", e);
-    }
-  }, [app, data]);
+  // Send message to AI for substitution - ask AI to update the recipe
+  const handleSubstitute = useCallback(
+    async (ingredientName: string) => {
+      try {
+        await app.sendMessage({
+          role: "user",
+          content: [
+            { 
+              type: "text", 
+              text: `I want to substitute "${ingredientName}" in this recipe. Please suggest an alternative and then call the show-recipe tool again with the updated ingredient so I can see the changes.` 
+            },
+          ],
+        });
+      } catch (e) {
+        console.error("Failed to send message:", e);
+      }
+    },
+    [app]
+  );
+
+  // Send message to AI for step explanation
+  const handleExplainStep = useCallback(
+    async (stepInstruction: string) => {
+      try {
+        await app.sendMessage({
+          role: "user",
+          content: [
+            { type: "text", text: `Can you explain this step in more detail: "${stepInstruction}"` },
+          ],
+        });
+      } catch (e) {
+        console.error("Failed to send message:", e);
+      }
+    },
+    [app]
+  );
+
+  if (!recipe) {
+    return <EmptyState />;
+  }
 
   return (
     <div className={styles.container}>
-      <header className={styles.header}>
-        <h1 className={styles.title}>MCP App Template</h1>
-        <p className={styles.subtitle}>
-          Theme: {hostContext?.theme ?? "unknown"}
-        </p>
-      </header>
+      <RecipeHeader recipe={recipe} />
 
-      <main className={styles.main}>
-        {data ? (
-          <div className={styles.card}>
-            <h2 className={styles.greeting}>{data.greeting}</h2>
-            <p className={styles.meta}>
-              Name: <strong>{data.name}</strong>
-            </p>
-            <p className={styles.meta}>
-              Timestamp: <code>{data.timestamp}</code>
-            </p>
-          </div>
-        ) : (
-          <div className={styles.card}>
-            <p className={styles.placeholder}>Waiting for tool result...</p>
-          </div>
-        )}
+      <ServingsSlider value={currentServings} onChange={setCurrentServings} />
 
-        <div className={styles.actions}>
-          <button className={styles.button} onClick={handleRefresh}>
-            Refresh
-          </button>
-          <button
-            className={styles.buttonSecondary}
-            onClick={handleSendMessage}
-            disabled={!data}
-          >
-            Send to Chat
-          </button>
-        </div>
-      </main>
+      <IngredientList ingredients={scaledIngredients} onSubstitute={handleSubstitute} />
+
+      <StepsList steps={recipe.steps} onExplain={handleExplainStep} />
+
+      {/* Notes */}
+      {recipe.notes && (
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>📝 Notes</h2>
+          <p className={styles.notes}>{recipe.notes}</p>
+        </section>
+      )}
     </div>
   );
 }

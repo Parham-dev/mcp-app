@@ -1,164 +1,439 @@
+/**
+ * Recipe Remix - Styles
+ * Beautiful recipe card with dark theme support.
+ */
+
+/* Container */
 .container {
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  padding: var(--spacing-lg, 24px);
-  background: var(--color-background-primary, #ffffff);
-  color: var(--color-text-primary, #1a1a1a);
+  min-height: 100vh;
+  padding: 1.5rem;
+  box-sizing: border-box;
+  font-family: var(--vscode-font-family, system-ui, sans-serif);
+  background-color: var(--vscode-editor-background, #ffffff);
+  color: var(--vscode-editor-foreground, #333333);
 }
 
-/* Dark theme support */
 :global([data-theme="dark"]) .container,
 :global(.dark) .container {
-  background: var(--color-background-primary, #1e1e1e);
-  color: var(--color-text-primary, #e0e0e0);
+  background-color: var(--vscode-editor-background, #1e1e1e);
+  color: var(--vscode-editor-foreground, #cccccc);
 }
 
-:global([data-theme="dark"]) .card,
-:global(.dark) .card {
-  background: var(--color-background-secondary, #2d2d2d);
-  border-color: var(--color-border-primary, #404040);
+/* Empty State */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 60vh;
+  padding: 2rem;
 }
 
-:global([data-theme="dark"]) .greeting,
-:global([data-theme="dark"]) .title,
-:global(.dark) .greeting,
-:global(.dark) .title {
-  color: var(--color-text-primary, #e0e0e0);
+.emptyIcon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
 }
 
-:global([data-theme="dark"]) .subtitle,
-:global([data-theme="dark"]) .meta,
-:global(.dark) .subtitle,
-:global(.dark) .meta {
-  color: var(--color-text-secondary, #a0a0a0);
+.emptyTitle {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  color: var(--vscode-editor-foreground, inherit);
 }
 
-:global([data-theme="dark"]) .meta code,
-:global(.dark) .meta code {
-  background: var(--color-background-tertiary, #3d3d3d);
+.emptyText {
+  font-size: 1rem;
+  color: var(--vscode-descriptionForeground, #666666);
+  margin: 0 0 1rem 0;
+  max-width: 300px;
 }
 
-:global([data-theme="dark"]) .buttonSecondary,
-:global(.dark) .buttonSecondary {
-  background: var(--color-background-secondary, #2d2d2d);
-  color: var(--color-text-primary, #e0e0e0);
-  border-color: var(--color-border-primary, #404040);
+:global([data-theme="dark"]) .emptyText,
+:global(.dark) .emptyText {
+  color: var(--vscode-descriptionForeground, #888888);
 }
 
-.header {
-  margin-bottom: var(--spacing-lg, 24px);
+.emptyHint {
+  font-size: 0.9rem;
+  color: var(--vscode-textLink-foreground, #0066cc);
+  font-style: italic;
 }
 
-.title {
-  font-size: var(--font-heading-lg-size, 1.5rem);
-  font-weight: var(--font-weight-semibold, 600);
-  margin: 0 0 var(--spacing-xs, 4px) 0;
-  color: var(--color-text-primary, #1a1a1a);
+:global([data-theme="dark"]) .emptyHint,
+:global(.dark) .emptyHint {
+  color: var(--vscode-textLink-foreground, #3794ff);
 }
 
-.subtitle {
-  font-size: var(--font-text-sm-size, 0.875rem);
-  color: var(--color-text-secondary, #666666);
+/* Recipe Header */
+.recipeHeader {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--vscode-input-border, #e0e0e0);
+}
+
+:global([data-theme="dark"]) .recipeHeader,
+:global(.dark) .recipeHeader {
+  border-bottom-color: var(--vscode-input-border, #444444);
+}
+
+.recipeName {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  color: var(--vscode-editor-foreground, inherit);
+}
+
+.recipeDescription {
+  font-size: 1rem;
+  color: var(--vscode-descriptionForeground, #666666);
+  margin: 0 0 1rem 0;
+}
+
+:global([data-theme="dark"]) .recipeDescription,
+:global(.dark) .recipeDescription {
+  color: var(--vscode-descriptionForeground, #999999);
+}
+
+/* Time Badges */
+.timeBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.timeBadge {
+  background-color: var(--vscode-badge-background, #e8e8e8);
+  color: var(--vscode-badge-foreground, #333333);
+  padding: 0.3rem 0.7rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+:global([data-theme="dark"]) .timeBadge,
+:global(.dark) .timeBadge {
+  background-color: var(--vscode-badge-background, #3c3c3c);
+  color: var(--vscode-badge-foreground, #cccccc);
+}
+
+/* Health Score Meter */
+.healthMeter {
+  margin-top: 1.25rem;
+  padding: 1rem;
+  background-color: var(--vscode-input-background, #f8f8f8);
+  border-radius: 12px;
+  max-width: 280px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+:global([data-theme="dark"]) .healthMeter,
+:global(.dark) .healthMeter {
+  background-color: var(--vscode-input-background, #2d2d2d);
+}
+
+.healthHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.healthLabel {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.healthValue {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.healthBarContainer {
+  height: 10px;
+  background-color: var(--vscode-input-border, #e0e0e0);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+:global([data-theme="dark"]) .healthBarContainer,
+:global(.dark) .healthBarContainer {
+  background-color: var(--vscode-input-border, #444444);
+}
+
+.healthBar {
+  height: 100%;
+  border-radius: 5px;
+  transition: width 0.5s ease, background-color 0.5s ease;
+}
+
+.healthDescription {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--vscode-descriptionForeground, #666666);
+  margin-top: 0.4rem;
+  font-weight: 500;
+}
+
+:global([data-theme="dark"]) .healthDescription,
+:global(.dark) .healthDescription {
+  color: var(--vscode-descriptionForeground, #999999);
+}
+
+/* Servings Section */
+.servingsSection {
+  background-color: var(--vscode-input-background, #f8f8f8);
+  border: 1px solid var(--vscode-input-border, #e0e0e0);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+:global([data-theme="dark"]) .servingsSection,
+:global(.dark) .servingsSection {
+  background-color: var(--vscode-input-background, #2d2d2d);
+  border-color: var(--vscode-input-border, #444444);
+}
+
+.servingsLabel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.servingsValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--vscode-textLink-foreground, #0066cc);
+}
+
+:global([data-theme="dark"]) .servingsValue,
+:global(.dark) .servingsValue {
+  color: var(--vscode-textLink-foreground, #3794ff);
+}
+
+.servingsSlider {
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--vscode-scrollbarSlider-background, #ddd);
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.servingsSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--vscode-button-background, #0066cc);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.servingsSlider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+.servingsRange {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--vscode-descriptionForeground, #888888);
+  margin-top: 0.25rem;
+}
+
+/* Sections */
+.section {
+  margin-bottom: 1.5rem;
+}
+
+.sectionTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem 0;
+  color: var(--vscode-editor-foreground, inherit);
+}
+
+/* Ingredients List */
+.ingredientsList {
+  list-style: none;
+  padding: 0;
   margin: 0;
 }
 
-.main {
+.ingredientItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--vscode-input-border, #eee);
+}
+
+:global([data-theme="dark"]) .ingredientItem,
+:global(.dark) .ingredientItem {
+  border-bottom-color: var(--vscode-input-border, #333);
+}
+
+.ingredientItem:last-child {
+  border-bottom: none;
+}
+
+.ingredientEmoji {
+  font-size: 1.3rem;
+  width: 2rem;
+  text-align: center;
+}
+
+.ingredientAmount {
+  font-weight: 600;
+  min-width: 80px;
+  color: var(--vscode-textLink-foreground, #0066cc);
+}
+
+:global([data-theme="dark"]) .ingredientAmount,
+:global(.dark) .ingredientAmount {
+  color: var(--vscode-textLink-foreground, #3794ff);
+}
+
+.ingredientName {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md, 16px);
 }
 
-.card {
-  background: var(--color-background-secondary, #f5f5f5);
-  border: 1px solid var(--color-border-primary, #e0e0e0);
-  border-radius: var(--border-radius-lg, 12px);
-  padding: var(--spacing-lg, 24px);
-}
-
-.greeting {
-  font-size: var(--font-heading-xl-size, 2rem);
-  font-weight: var(--font-weight-bold, 700);
-  margin: 0 0 var(--spacing-md, 16px) 0;
-  color: var(--color-text-primary, #1a1a1a);
-}
-
-.meta {
-  font-size: var(--font-text-md-size, 1rem);
-  color: var(--color-text-secondary, #666666);
-  margin: var(--spacing-xs, 4px) 0;
-}
-
-.meta code {
-  font-family: var(--font-mono, monospace);
-  font-size: var(--font-text-sm-size, 0.875rem);
-  background: var(--color-background-tertiary, #e8e8e8);
-  padding: 2px 6px;
-  border-radius: var(--border-radius-sm, 4px);
-}
-
-.placeholder {
-  color: var(--color-text-tertiary, #999999);
-  font-style: italic;
-}
-
-.actions {
-  display: flex;
-  gap: var(--spacing-sm, 8px);
-  flex-wrap: wrap;
-}
-
-.button {
-  background: var(--color-accent-primary, #0066cc);
-  color: var(--color-text-on-accent, #ffffff);
+.ingredientAction {
+  background: none;
   border: none;
-  border-radius: var(--border-radius-md, 8px);
-  padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
-  font-size: var(--font-text-md-size, 1rem);
-  font-weight: var(--font-weight-medium, 500);
+  font-size: 1rem;
   cursor: pointer;
-  transition: opacity 0.2s;
-}
-
-.button:hover {
-  opacity: 0.9;
-}
-
-.button:active {
-  opacity: 0.8;
-}
-
-.buttonSecondary {
-  background: var(--color-background-secondary, #f5f5f5);
-  color: var(--color-text-primary, #1a1a1a);
-  border: 1px solid var(--color-border-primary, #e0e0e0);
-  border-radius: var(--border-radius-md, 8px);
-  padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
-  font-size: var(--font-text-md-size, 1rem);
-  font-weight: var(--font-weight-medium, 500);
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.buttonSecondary:hover {
-  background: var(--color-background-tertiary, #e8e8e8);
-}
-
-.buttonSecondary:disabled {
   opacity: 0.5;
-  cursor: not-allowed;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  padding: 0.25rem;
 }
 
-.error {
-  background: var(--color-background-error, #fff0f0);
-  border: 1px solid var(--color-border-error, #ffcccc);
-  border-radius: var(--border-radius-md, 8px);
-  padding: var(--spacing-md, 16px);
-  color: var(--color-text-error, #cc0000);
+.ingredientAction:hover {
+  opacity: 1;
+  transform: scale(1.1);
 }
 
-.loading {
-  color: var(--color-text-secondary, #666666);
+/* Steps List */
+.stepsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  counter-reset: step-counter;
+}
+
+.stepItem {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--vscode-input-border, #eee);
+}
+
+:global([data-theme="dark"]) .stepItem,
+:global(.dark) .stepItem {
+  border-bottom-color: var(--vscode-input-border, #333);
+}
+
+.stepItem:last-child {
+  border-bottom: none;
+}
+
+.stepNumber {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background-color: var(--vscode-button-background, #0066cc);
+  color: var(--vscode-button-foreground, #ffffff);
+  font-weight: 700;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.stepContent {
+  flex: 1;
+}
+
+.stepInstruction {
+  margin: 0 0 0.25rem 0;
+  line-height: 1.5;
+}
+
+.stepDuration {
+  font-size: 0.85rem;
+  color: var(--vscode-descriptionForeground, #888888);
+}
+
+.stepAction {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  padding: 0.25rem;
+  align-self: flex-start;
+  margin-top: 0.25rem;
+}
+
+.stepAction:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+/* Notes */
+.notes {
+  background-color: var(--vscode-textBlockQuote-background, #f5f5f5);
+  border-left: 4px solid var(--vscode-textLink-foreground, #0066cc);
+  padding: 1rem;
+  margin: 0;
+  border-radius: 0 8px 8px 0;
   font-style: italic;
+  color: var(--vscode-descriptionForeground, #666666);
+}
+
+:global([data-theme="dark"]) .notes,
+:global(.dark) .notes {
+  background-color: var(--vscode-textBlockQuote-background, #2a2a2a);
+  border-left-color: var(--vscode-textLink-foreground, #3794ff);
+  color: var(--vscode-descriptionForeground, #999999);
+}
+
+/* Loading state */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: var(--vscode-descriptionForeground, #888888);
+  font-size: 1rem;
+}
+
+/* Error state */
+.error {
+  background-color: var(--vscode-inputValidation-errorBackground, #ffebeb);
+  border: 1px solid var(--vscode-inputValidation-errorBorder, #ff6b6b);
+  color: var(--vscode-errorForeground, #cc0000);
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+:global([data-theme="dark"]) .error,
+:global(.dark) .error {
+  background-color: var(--vscode-inputValidation-errorBackground, #3c1f1f);
+  border-color: var(--vscode-inputValidation-errorBorder, #be4040);
+  color: var(--vscode-errorForeground, #f48771);
 }
