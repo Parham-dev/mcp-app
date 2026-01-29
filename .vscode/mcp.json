@@ -3,6 +3,10 @@
     "recipe-remix": {
       "type": "sse",
       "url": "http://localhost:3001/recipe-remix/mcp"
+    },
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/"
     }
   }
 }

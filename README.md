@@ -31,7 +31,7 @@ MCP App Store is a **hosting platform** that lets you:
   "servers": {
     "recipe-remix": {
       "type": "sse",
-      "url": "https://mcp-production-3a5e.up.railway.app/recipe-remix/mcp?apiKey=YOUR_API_KEY"
+      "url": "https://mcp-production-3a5e.up.railway.app/recipe-remix/mcp"
     }
   }
 }
@@ -154,11 +154,11 @@ railway up
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `PORT` | Server port | 3001 (Railway uses 8080) |
-| `API_KEY` | Required API key for auth | None (optional locally) |
+| `API_KEY` | Optional API key for auth | None (public access) |
 
 ## 🔒 Security
 
-- **API Key Validation** - All production requests require `?apiKey=` or `X-API-Key` header
+- **API Key Validation** - Optional - set `API_KEY` env var to enable auth via `?apiKey=` or `Bearer` header
 - **CSP Support** - Apps can configure Content Security Policy for external resources
 - **CORS Enabled** - Cross-origin requests supported for browser clients
 
