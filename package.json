@@ -26,7 +26,7 @@
     }
   },
   "scripts": {
-    "build:apps": "cross-env INPUT=apps/recipe-remix/mcp-app.html vite build && cross-env INPUT=apps/budget-allocator/mcp-app.html vite build",
+    "build:apps": "cross-env INPUT=apps/recipe-remix/mcp-app.html vite build && cross-env INPUT=apps/allocation-remix/mcp-app.html vite build",
     "build": "tsc --noEmit && npm run build:apps && tsc -p tsconfig.server.json",
     "watch": "cross-env INPUT=apps/recipe-remix/mcp-app.html vite build --watch",
     "serve": "tsx --watch main.ts",

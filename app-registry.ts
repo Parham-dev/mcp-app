@@ -14,7 +14,7 @@ export interface AppDefinition {
 
 // Import all apps
 import * as recipeRemix from "./apps/recipe-remix/server.js";
-import * as budgetAllocator from "./apps/budget-allocator/server.js";
+import * as allocationRemix from "./apps/allocation-remix/server.js";
 
 // Register all apps here
 export const apps: AppDefinition[] = [
@@ -25,10 +25,10 @@ export const apps: AppDefinition[] = [
     createServer: recipeRemix.createServer,
   },
   {
-    id: budgetAllocator.appId,
-    name: budgetAllocator.appName,
-    description: budgetAllocator.appDescription,
-    createServer: budgetAllocator.createServer,
+    id: allocationRemix.appId,
+    name: allocationRemix.appName,
+    description: allocationRemix.appDescription,
+    createServer: allocationRemix.createServer,
   },
   // Add more apps here:
   // {
