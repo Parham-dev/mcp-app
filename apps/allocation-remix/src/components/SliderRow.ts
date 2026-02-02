@@ -36,7 +36,7 @@ export function createSliderRow(
       <span class="label-text">${category.name}</span>
     </label>
     <div class="sparkline-wrapper">
-      <canvas class="sparkline" width="50" height="28"></canvas>
+      <canvas class="sparkline" width="60" height="32"></canvas>
       <span class="sparkline-tooltip">${tooltipText}</span>
     </div>
     <div class="slider-container">
@@ -49,11 +49,10 @@ export function createSliderRow(
         value="${allocation}"
       />
     </div>
-    <span class="slider-value">
+    <div class="slider-value">
       <span class="percent">${allocation.toFixed(1)}%</span>
       <span class="amount">${formatCurrency(amount, symbol)}</span>
-    </span>
-    <span class="percentile-badge"></span>
+    </div>
   `;
 
   // Draw sparkline (only if history exists)

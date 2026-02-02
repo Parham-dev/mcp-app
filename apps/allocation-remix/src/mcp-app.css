@@ -115,17 +115,18 @@ body {
   padding: 4px 0;
 }
 
-/* Slider Row */
+/* Slider Row - Redesigned for better proportions */
 .slider-row {
+  position: relative;
   display: grid;
-  grid-template-columns: 110px 55px minmax(120px, 1fr) 90px 55px;
+  grid-template-columns: 140px 60px 1fr 100px;
   align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
+  gap: 12px;
+  padding: 12px 16px;
   border-radius: 8px;
   background: var(--card-bg);
   transition: background-color 0.15s ease;
-  min-height: 48px;
+  min-height: 52px;
 }
 
 .slider-row.highlighted {
@@ -140,9 +141,13 @@ body {
   }
 
   .slider-row {
-    grid-template-columns: 95px 45px minmax(100px, 1fr) 80px 48px;
-    gap: 8px;
-    padding: 8px 10px;
+    grid-template-columns: 120px 55px 1fr 90px;
+    gap: 10px;
+    padding: 10px 14px;
+  }
+
+  .slider-value .percent {
+    font-size: 17px;
   }
 
   .chart-section {
@@ -158,13 +163,13 @@ body {
 /* Very narrow screens: hide sparklines and simplify layout */
 @media (max-width: 450px) {
   .app-container {
-    padding: 8px;
+    padding: 10px;
   }
 
   .slider-row {
-    grid-template-columns: 85px minmax(80px, 1fr) 72px 42px;
-    gap: 8px;
-    padding: 6px 8px;
+    grid-template-columns: 110px 1fr 85px;
+    gap: 10px;
+    padding: 10px 12px;
   }
 
   .sparkline-wrapper {
@@ -181,16 +186,11 @@ body {
   }
 
   .slider-value .percent {
-    font-size: 14px;
+    font-size: 16px;
   }
 
   .slider-value .amount {
-    font-size: 11px;
-  }
-
-  .percentile-badge {
-    font-size: 10px;
-    padding: 2px 5px;
+    font-size: 12px;
   }
 
   .chart-section {
@@ -232,8 +232,6 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  flex: 1;
-  min-width: 0;
 }
 
 /* Sparkline */
@@ -361,37 +359,27 @@ body {
   flex-direction: column;
   align-items: flex-end;
   justify-content: center;
-  min-width: 0;
 }
 
 .slider-value .percent {
   display: block;
-  font-size: 16px;
+  font-size: 19px;
   font-weight: 600;
   line-height: 1.2;
+  white-space: nowrap;
 }
 
 .slider-value .amount {
   display: block;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--color-text-muted);
   line-height: 1.3;
+  white-space: nowrap;
 }
 
-/* Percentile Badge */
+/* Percentile Badge - Hidden by default */
 .percentile-badge {
-  font-size: 11px;
-  font-weight: 500;
-  padding: 4px 6px;
-  border-radius: 4px;
-  text-align: center;
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  min-width: 0;
-  overflow: hidden;
+  display: none;
 }
 
 .percentile-icon {
