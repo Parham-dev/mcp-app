@@ -79,14 +79,17 @@ src/
 
 ### Server (`server.ts`)
 
-Exposes a single `get-budget-data` tool that returns:
-- Category definitions with colors and default allocations
-- Historical data - 24 months of allocation history per category
-- Industry benchmarks - Aggregated percentile data by company stage
+Exposes a single `show-allocation` tool that accepts:
+- Dynamic categories with colors and default allocations (2-10 categories)
+- Total amount and currency symbol
+- Optional historical data for sparkline visualization
+- Optional industry/reference benchmarks for percentile comparison
+
+The AI determines what data to provide based on user context and needs.
 
 ### App Bundle
 
-- **Size**: 509KB (gzip: 135KB)
+- **Size**: 549KB (gzip: 148KB)
 - **Framework**: Vanilla TypeScript with component pattern
 - **Chart Library**: Chart.js for donut visualization
 - **Single-file output**: All dependencies bundled via Vite
