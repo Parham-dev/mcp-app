@@ -26,7 +26,7 @@
     }
   },
   "scripts": {
-    "build:apps": "cross-env INPUT=apps/recipe-remix/mcp-app.html vite build",
+    "build:apps": "cross-env INPUT=apps/recipe-remix/mcp-app.html vite build && cross-env INPUT=apps/budget-allocator/mcp-app.html vite build",
     "build": "tsc --noEmit && npm run build:apps && tsc -p tsconfig.server.json",
     "watch": "cross-env INPUT=apps/recipe-remix/mcp-app.html vite build --watch",
     "serve": "tsx --watch main.ts",
@@ -38,6 +38,7 @@
   "dependencies": {
     "@modelcontextprotocol/ext-apps": "^1.0.0",
     "@modelcontextprotocol/sdk": "^1.24.0",
+    "chart.js": "^4.4.0",
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "lottie-react": "^2.4.1",
