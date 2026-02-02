@@ -1,9 +1,18 @@
 /**
  * Budget Chart Component
  */
-import { Chart } from "chart.js";
+import {
+  Chart,
+  DoughnutController,
+  ArcElement,
+  Tooltip,
+  Legend,
+} from "chart.js";
 import type { BudgetCategory, AppState } from "../types";
 import { formatCurrency } from "../utils";
+
+// Register Chart.js components
+Chart.register(DoughnutController, ArcElement, Tooltip, Legend);
 
 export function createBudgetChart(
   canvas: HTMLCanvasElement,
