@@ -61,7 +61,8 @@ function handleSliderChange(categoryId: string, newPercent: number): void {
   
   updateStatusBar(statusBar, state.allocations, state.totalBudget, symbol);
   
-  if (state.config && state.analytics) {
+  // Only update benchmarks if they exist
+  if (state.config && state.analytics && state.analytics.benchmarks && state.analytics.benchmarks.length > 0) {
     updatePercentileBadge(
       categoryId,
       state.config.categories,

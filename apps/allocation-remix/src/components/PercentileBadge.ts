@@ -16,6 +16,9 @@ export function updatePercentileBadge(
   analytics: BudgetAnalytics,
   selectedStage: string,
 ): void {
+  // Return early if no benchmarks available
+  if (!analytics.benchmarks || analytics.benchmarks.length === 0) return;
+  
   const stageBenchmark = analytics.benchmarks.find(
     (b) => b.stage === selectedStage,
   );
