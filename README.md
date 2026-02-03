@@ -23,6 +23,7 @@ MCP App Store is a **hosting platform** that lets you:
 | App | Endpoint | Description |
 |-----|----------|-------------|
 | 🍳 [Recipe Remix](apps/recipe-remix/) | `/recipe-remix/mcp` | AI recipe assistant with beautiful UI |
+| 📊 [Allocation Remix](apps/allocation-remix/) | `/allocation-remix/mcp` | Dynamic resource allocation visualizer |
 
 ## 🔌 Connect to Claude Desktop / VS Code
 
@@ -32,6 +33,10 @@ MCP App Store is a **hosting platform** that lets you:
     "recipe-remix": {
       "type": "sse",
       "url": "https://mcp-production-3a5e.up.railway.app/recipe-remix/mcp"
+    },
+    "allocation-remix": {
+      "type": "sse",
+      "url": "https://mcp-production-3a5e.up.railway.app/allocation-remix/mcp"
     }
   }
 }
