@@ -15,6 +15,7 @@ export interface AppDefinition {
 // Import all apps
 import * as recipeRemix from "./apps/recipe-remix/server.js";
 import * as allocationRemix from "./apps/allocation-remix/server.js";
+import * as pdfInsight from "./apps/pdf-insight/server.js";
 
 // Register all apps here
 export const apps: AppDefinition[] = [
@@ -29,6 +30,12 @@ export const apps: AppDefinition[] = [
     name: allocationRemix.appName,
     description: allocationRemix.appDescription,
     createServer: allocationRemix.createServer,
+  },
+  {
+    id: pdfInsight.appId,
+    name: pdfInsight.appName,
+    description: pdfInsight.appDescription,
+    createServer: pdfInsight.createServer,
   },
   // Add more apps here:
   // {
