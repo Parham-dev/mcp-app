@@ -21,6 +21,7 @@ import {
   showRenderWarning,
   hideRenderWarning,
   renderNotesList,
+  setNotesStatus,
 } from "./ui";
 import "./global.css";
 import "./mcp-app.css";
@@ -35,6 +36,12 @@ let pdfTitle: string | undefined;
 let viewUUID: string | undefined;
 let documentId: string | undefined;
 let currentDisplayMode: "inline" | "fullscreen" = "inline";
+let notesCache: Array<{
+  id: string;
+  page: number;
+  noteText: string;
+  selectionText?: string | null;
+}> = [];
 
 const app = new App(
   { name: "PDF Viewer", version: "1.0.0" },
@@ -54,6 +61,7 @@ const renderer = createPdfRenderer({
       onOpenLink: (url) => app.openLink({ url }),
     });
     updatePageContext();
+    renderNotesForPage();
     requestFitToContent();
   },
   onError: (message) => {
@@ -80,7 +88,8 @@ const selectionMenu = createSelectionMenu({
     const noteText = window.prompt("Save note", text);
     if (!noteText) return;
     const { currentPage } = renderer.getState();
-    await app.callServerTool({
+    setNotesStatus("Saving...", "info");
+    const result = await app.callServerTool({
       name: "save_note",
       arguments: {
         documentId,
@@ -89,6 +98,26 @@ const selectionMenu = createSelectionMenu({
         noteText,
       },
     });
+    if (result.isError) {
+      const errorText = result.content
+        ?.map((c) => ("text" in c ? c.text : ""))
+        .join(" ")
+        .trim();
+      setNotesStatus(errorText ? `Save failed: ${errorText}` : "Save failed", "error");
+      return;
+    }
+
+    const payload = result.structuredContent as { id?: string } | null;
+    if (payload?.id) {
+      notesCache = [
+        { id: payload.id, page: currentPage, noteText, selectionText: text },
+        ...notesCache,
+      ];
+      renderNotesForPage();
+    }
+
+    setNotesStatus("Saved", "success");
+    setTimeout(() => setNotesStatus("", "none"), 2000);
     await loadNotes();
   },
   onSelectionChange: () => updatePageContext(),
@@ -100,6 +129,15 @@ const updatePageContext = createContextUpdater({
   selectionMenu,
   getPdfMeta: () => ({ pdfUrl, pdfTitle }),
 });
+
+function renderNotesForPage() {
+  const { currentPage } = renderer.getState();
+  const notesForPage = notesCache.filter((note) => note.page === currentPage);
+  renderNotesList(notesForPage, {
+    currentPage,
+    totalNotes: notesCache.length,
+  });
+}
 
 els.renderWarningCloseEl.addEventListener("click", () => {
   hideRenderWarning();
@@ -231,7 +269,8 @@ function parseToolResult(result: CallToolResult): {
 
 async function loadNotes() {
   if (!documentId) {
-    renderNotesList([]);
+    notesCache = [];
+    renderNotesForPage();
     return;
   }
   const result = await app.callServerTool({
@@ -239,7 +278,9 @@ async function loadNotes() {
     arguments: { documentId },
   });
   if (result.isError || !result.structuredContent) {
-    renderNotesList([]);
+    notesCache = [];
+    renderNotesForPage();
+    setNotesStatus("Failed to load notes", "error");
     return;
   }
   const payload = result.structuredContent as unknown as {
@@ -250,7 +291,8 @@ async function loadNotes() {
       selectionText?: string | null;
     }>;
   };
-  renderNotesList(payload.notes ?? []);
+  notesCache = payload.notes ?? [];
+  renderNotesForPage();
 }
 
 // UI events

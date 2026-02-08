@@ -329,9 +329,32 @@ body {
   font-size: 0.9rem;
 }
 
-#notes-count {
+.notes-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   font-size: 0.75rem;
   color: var(--text100);
+}
+
+#notes-page {
+  white-space: nowrap;
+}
+
+#notes-count {
+  font-variant-numeric: tabular-nums;
+}
+
+.notes-status {
+  font-weight: 500;
+}
+
+.notes-status[data-tone="success"] {
+  color: #2e7d32;
+}
+
+.notes-status[data-tone="error"] {
+  color: #c62828;
 }
 
 .notes-list {

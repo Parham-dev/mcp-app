@@ -27,6 +27,8 @@ export const els = {
   renderWarningCloseEl: document.getElementById("render-warning-close") as HTMLButtonElement,
   notesListEl: document.getElementById("notes-list") as HTMLDivElement,
   notesCountEl: document.getElementById("notes-count") as HTMLSpanElement,
+  notesPageEl: document.getElementById("notes-page") as HTMLSpanElement,
+  notesStatusEl: document.getElementById("notes-status") as HTMLSpanElement,
 };
 
 export function showLoading(text: string) {
@@ -105,10 +107,22 @@ export function hideRenderWarning() {
 
 export function renderNotesList(
   notes: Array<{ id: string; page: number; noteText: string; selectionText?: string | null }>,
+  meta?: { currentPage: number; totalNotes: number },
 ) {
-  els.notesCountEl.textContent = String(notes.length);
+  if (meta) {
+    els.notesPageEl.textContent = `Page ${meta.currentPage}`;
+  } else {
+    els.notesPageEl.textContent = "";
+  }
+
+  els.notesCountEl.textContent = meta
+    ? `${notes.length} of ${meta.totalNotes}`
+    : String(notes.length);
+
   if (notes.length === 0) {
-    els.notesListEl.innerHTML = '<div class="notes-empty">No notes yet.</div>';
+    els.notesListEl.innerHTML = meta
+      ? '<div class="notes-empty">No notes on this page.</div>'
+      : '<div class="notes-empty">No notes yet.</div>';
     return;
   }
 
@@ -120,4 +134,16 @@ export function renderNotesList(
       return `<div class="notes-item">${selection}<div>${note.noteText}</div></div>`;
     })
     .join("");
+}
+
+export function setNotesStatus(
+  message: string,
+  tone: "success" | "error" | "info" | "none" = "info",
+) {
+  els.notesStatusEl.textContent = message;
+  if (tone === "none") {
+    els.notesStatusEl.removeAttribute("data-tone");
+  } else {
+    els.notesStatusEl.setAttribute("data-tone", tone);
+  }
 }
