@@ -21,6 +21,8 @@ import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 
 const MAX_MODEL_CONTEXT_LENGTH = 15000;
 const CHUNK_SIZE = 500 * 1024; // 500KB chunks
+const ZOOM_LEVELS = [0.5, 0.75, 1, 1.25, 1.5, 2, 2.5, 3] as const;
+const DEFAULT_ZOOM = 1;
 
 // Configure PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
@@ -35,7 +37,7 @@ let pdfDocument: pdfjsLib.PDFDocumentProxy | null = null;
 let pdfBytes: Uint8Array | null = null;
 let currentPage = 1;
 let totalPages = 0;
-let scale = 1.0;
+let scale = DEFAULT_ZOOM;
 let pdfUrl = "";
 let pdfTitle: string | undefined;
 let viewUUID: string | undefined;
@@ -341,7 +343,7 @@ async function renderPage() {
     canvasEl.style.height = `${viewport.height}px`;
 
     // Scale context for retina
-    ctx.scale(dpr, dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
     // Clear and setup text layer
     textLayerEl.innerHTML = "";
@@ -383,7 +385,9 @@ async function renderPage() {
       textContentSource: textContent,
       container: textLayerEl,
       viewport,
-    });
+      // Improves selection accuracy for tightly spaced glyphs (runtime option)
+      enhanceTextSelection: true,
+    } as unknown as ConstructorParameters<typeof TextLayer>[0]);
     await textLayer.render();
 
     updateControls();
@@ -460,18 +464,29 @@ function nextPage() {
 }
 
 function zoomIn() {
-  scale = Math.min(scale + 0.25, 3.0);
-  renderPage();
+  const index = ZOOM_LEVELS.findIndex((level) => level >= scale);
+  const nextIndex = index === -1 ? 0 : Math.min(index + 1, ZOOM_LEVELS.length - 1);
+  if (scale !== ZOOM_LEVELS[nextIndex]) {
+    scale = ZOOM_LEVELS[nextIndex];
+    renderPage();
+  }
 }
 
 function zoomOut() {
-  scale = Math.max(scale - 0.25, 0.5);
-  renderPage();
+  const index = ZOOM_LEVELS.findIndex((level) => level >= scale);
+  const safeIndex = index === -1 ? ZOOM_LEVELS.length - 1 : index;
+  const nextIndex = Math.max(safeIndex - 1, 0);
+  if (scale !== ZOOM_LEVELS[nextIndex]) {
+    scale = ZOOM_LEVELS[nextIndex];
+    renderPage();
+  }
 }
 
 function resetZoom() {
-  scale = 1.0;
-  renderPage();
+  if (scale !== DEFAULT_ZOOM) {
+    scale = DEFAULT_ZOOM;
+    renderPage();
+  }
 }
 
 async function toggleFullscreen() {
