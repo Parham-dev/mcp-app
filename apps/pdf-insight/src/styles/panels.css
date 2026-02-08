@@ -1,0 +1,197 @@
+/* Error State */
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 1rem;
+  padding: 2rem;
+  text-align: center;
+}
+
+.error-icon {
+  font-size: 3rem;
+}
+
+#error-message {
+  color: var(--text200);
+  max-width: 400px;
+}
+
+/* Notes Panel */
+.notes-panel {
+  border-top: 1px solid var(--bg200);
+  background: var(--bg000);
+  padding: 0.75rem 1rem;
+}
+
+.notes-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.notes-header h3 {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.notes-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text100);
+}
+
+#notes-page {
+  white-space: nowrap;
+}
+
+#notes-count {
+  font-variant-numeric: tabular-nums;
+}
+
+.notes-status {
+  font-weight: 500;
+}
+
+.notes-status[data-tone="success"] {
+  color: #2e7d32;
+}
+
+.notes-status[data-tone="error"] {
+  color: #c62828;
+}
+
+.notes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.notes-item {
+  border: 1px solid var(--bg200);
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  background: var(--bg100);
+}
+
+.notes-item strong {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text100);
+  margin-bottom: 0.25rem;
+}
+
+.notes-empty {
+  font-size: 0.8rem;
+  color: var(--text100);
+}
+
+/* Selection Menu */
+.selection-menu {
+  position: absolute;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.4rem;
+  background: var(--bg000);
+  border: 1px solid var(--bg200);
+  border-radius: 0.75rem;
+  box-shadow: var(--shadow-page);
+  z-index: 2000;
+}
+
+.selection-menu button {
+  border: 1px solid var(--bg200);
+  background: var(--bg000);
+  color: var(--text000);
+  padding: 0.35rem 0.6rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.selection-menu button:hover:not(.disabled) {
+  background: var(--bg100);
+}
+
+.selection-menu button.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+}
+
+.modal {
+  background: var(--bg000);
+  color: var(--text000);
+  border: 1px solid var(--bg200);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  width: min(420px, 90vw);
+  box-shadow: var(--shadow-page);
+}
+
+.modal h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+
+.modal p {
+  margin: 0 0 1rem;
+  font-size: 0.85rem;
+  color: var(--text100);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.modal-actions button {
+  border: 1px solid var(--bg200);
+  background: var(--bg000);
+  color: var(--text000);
+  padding: 0.35rem 0.6rem;
+  border-radius: 0.5rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.modal-actions button:hover {
+  background: var(--bg100);
+}
+
+.note-dialog-input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.5rem;
+  border: 1px solid var(--bg200);
+  border-radius: 0.5rem;
+  background: var(--bg000);
+  color: var(--text000);
+  font-size: 0.85rem;
+  font-family: inherit;
+  resize: vertical;
+  margin-bottom: 1rem;
+}
+
+.note-dialog-input:focus {
+  outline: none;
+  border-color: var(--text100);
+}

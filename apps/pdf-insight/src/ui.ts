@@ -8,6 +8,7 @@ export const els = {
   canvasContainerEl: document.querySelector(".canvas-container") as HTMLElement,
   canvasEl: document.getElementById("pdf-canvas") as HTMLCanvasElement,
   textLayerEl: document.getElementById("text-layer") as HTMLElement,
+  highlightLayerEl: document.getElementById("highlight-layer") as HTMLElement,
   titleEl: document.getElementById("pdf-title") as HTMLElement,
   pageInputEl: document.getElementById("page-input") as HTMLInputElement,
   totalPagesEl: document.getElementById("total-pages") as HTMLElement,

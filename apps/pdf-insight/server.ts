@@ -27,210 +27,42 @@ import { z } from "zod";
 import { createDb } from "./db/client.js";
 import { createRepository } from "./db/repository.js";
 
+// --- Extracted modules ---
+import {
+  DEFAULT_PDF,
+  RESOURCE_URI,
+  allowedRemoteOrigins,
+  allowedLocalFiles,
+} from "./server/config.js";
+import {
+  isFileUrl,
+  isArxivUrl,
+  normalizeArxivUrl,
+  fileUrlToPath,
+  pathToFileUrl,
+  validateUrl as _validateUrl,
+} from "./server/url.js";
+import { MAX_CHUNK_BYTES, readPdfRange } from "./server/pdf-reader.js";
+
+// --- Re-exports for test compatibility ---
+export { isFileUrl, isArxivUrl, normalizeArxivUrl, fileUrlToPath, pathToFileUrl };
+export { allowedLocalFiles, allowedRemoteOrigins };
+export { readPdfRange, MAX_CHUNK_BYTES };
+export { DEFAULT_PDF, RESOURCE_URI };
+
+/** Bound validateUrl that uses module-level config sets */
+export function validateUrl(url: string): { valid: boolean; error?: string } {
+  return _validateUrl(url, allowedRemoteOrigins, allowedLocalFiles);
+}
+
 export const appId = "pdf-insight";
 export const appName = "PDF Viewer";
 export const appDescription = "Interactive PDF viewer with remote URL support.";
-
-// =============================================================================
-// Configuration
-// =============================================================================
-
-export const DEFAULT_PDF = "https://arxiv.org/pdf/1706.03762"; // Attention Is All You Need
-export const MAX_CHUNK_BYTES = 512 * 1024; // 512KB max per request
-export const RESOURCE_URI = "ui://pdf-insight/mcp-app.html";
-
-/** Allowed remote origins (security allowlist) */
-export const allowedRemoteOrigins = new Set([
-  "https://agrirxiv.org",
-  "https://arxiv.org",
-  "https://chemrxiv.org",
-  "https://edarxiv.org",
-  "https://engrxiv.org",
-  "https://hal.science",
-  "https://osf.io",
-  "https://psyarxiv.com",
-  "https://ssrn.com",
-  "https://www.biorxiv.org",
-  "https://www.eartharxiv.org",
-  "https://www.medrxiv.org",
-  "https://www.preprints.org",
-  "https://www.researchsquare.com",
-  "https://www.sportarxiv.org",
-  "https://zenodo.org",
-]);
-
-/** Allowed local file paths (populated from env) */
-export const allowedLocalFiles = new Set<string>();
-
-function addLocalFile(filePath: string) {
-  const absolutePath = path.resolve(filePath.trim());
-  if (!absolutePath) return;
-  if (fs.existsSync(absolutePath)) {
-    allowedLocalFiles.add(absolutePath);
-  }
-}
-
-function addLocalDirectory(dirPath: string) {
-  const absoluteDir = path.resolve(dirPath.trim());
-  if (!absoluteDir || !fs.existsSync(absoluteDir)) return;
-  const entries = fs.readdirSync(absoluteDir, { withFileTypes: true });
-  for (const entry of entries) {
-    if (!entry.isFile()) continue;
-    if (!entry.name.toLowerCase().endsWith(".pdf")) continue;
-    addLocalFile(path.join(absoluteDir, entry.name));
-  }
-}
-
-function loadLocalPathsFromEnv() {
-  const files = process.env.PDF_LOCAL_FILES;
-  if (files) {
-    for (const filePath of files.split(",")) {
-      addLocalFile(filePath);
-    }
-  }
-
-  const dirs = process.env.PDF_LOCAL_DIRS;
-  if (dirs) {
-    for (const dirPath of dirs.split(",")) {
-      addLocalDirectory(dirPath);
-    }
-  }
-}
-
-loadLocalPathsFromEnv();
 
 const HTML_PATH = path.join(
   import.meta.dirname,
   "../../dist/apps/pdf-insight/mcp-app.html",
 );
-
-// =============================================================================
-// URL Validation & Normalization
-// =============================================================================
-
-export function isFileUrl(url: string): boolean {
-  return url.startsWith("file://");
-}
-
-export function isArxivUrl(url: string): boolean {
-  try {
-    const parsed = new URL(url);
-    return (
-      parsed.hostname === "arxiv.org" || parsed.hostname === "www.arxiv.org"
-    );
-  } catch {
-    return false;
-  }
-}
-
-export function normalizeArxivUrl(url: string): string {
-  // Convert arxiv abstract URLs to PDF URLs
-  // https://arxiv.org/abs/1706.03762 -> https://arxiv.org/pdf/1706.03762
-  return url.replace("/abs/", "/pdf/").replace(/\.pdf$/, "");
-}
-
-export function fileUrlToPath(fileUrl: string): string {
-  return decodeURIComponent(fileUrl.replace("file://", ""));
-}
-
-export function pathToFileUrl(filePath: string): string {
-  const absolutePath = path.resolve(filePath);
-  return `file://${encodeURIComponent(absolutePath).replace(/%2F/g, "/")}`;
-}
-
-export function validateUrl(url: string): { valid: boolean; error?: string } {
-  if (isFileUrl(url)) {
-    const filePath = fileUrlToPath(url);
-    if (!allowedLocalFiles.has(filePath)) {
-      return {
-        valid: false,
-        error: `Local file not in allowed list: ${filePath}`,
-      };
-    }
-    if (!fs.existsSync(filePath)) {
-      return { valid: false, error: `File not found: ${filePath}` };
-    }
-    return { valid: true };
-  }
-
-  // Remote URL - check against allowed origins
-  try {
-    const parsed = new URL(url);
-    const origin = `${parsed.protocol}//${parsed.hostname}`;
-    if (
-      ![...allowedRemoteOrigins].some((allowed) => origin.startsWith(allowed))
-    ) {
-      return { valid: false, error: `Origin not allowed: ${origin}` };
-    }
-    return { valid: true };
-  } catch {
-    return { valid: false, error: `Invalid URL: ${url}` };
-  }
-}
-
-// =============================================================================
-// Range Request Helpers
-// =============================================================================
-
-export async function readPdfRange(
-  url: string,
-  offset: number,
-  byteCount: number,
-): Promise<{ data: Uint8Array; totalBytes: number }> {
-  const normalized = isArxivUrl(url) ? normalizeArxivUrl(url) : url;
-  const clampedByteCount = Math.min(byteCount, MAX_CHUNK_BYTES);
-
-  if (isFileUrl(normalized)) {
-    const filePath = fileUrlToPath(normalized);
-    const stats = await fs.promises.stat(filePath);
-    const totalBytes = stats.size;
-
-    // Clamp to file bounds
-    const start = Math.min(offset, totalBytes);
-    const end = Math.min(start + clampedByteCount, totalBytes);
-
-    if (start >= totalBytes) {
-      return { data: new Uint8Array(0), totalBytes };
-    }
-
-    // Read range from local file
-    const buffer = Buffer.alloc(end - start);
-    const fd = await fs.promises.open(filePath, "r");
-    try {
-      await fd.read(buffer, 0, end - start, start);
-    } finally {
-      await fd.close();
-    }
-
-    return { data: new Uint8Array(buffer), totalBytes };
-  }
-
-  // Remote URL - Range request
-  const response = await fetch(normalized, {
-    headers: {
-      Range: `bytes=${offset}-${offset + clampedByteCount - 1}`,
-    },
-  });
-
-  if (!response.ok && response.status !== 206) {
-    throw new Error(
-      `Range request failed: ${response.status} ${response.statusText}`,
-    );
-  }
-
-  // Parse total size from Content-Range header
-  const contentRange = response.headers.get("content-range");
-  let totalBytes = 0;
-  if (contentRange) {
-    const match = contentRange.match(/bytes \d+-\d+\/(\d+)/);
-    if (match) {
-      totalBytes = parseInt(match[1], 10);
-    }
-  }
-
-  const data = new Uint8Array(await response.arrayBuffer());
-  return { data, totalBytes };
-}
 
 // =============================================================================
 // MCP Server Factory
@@ -457,6 +289,72 @@ export function createServer(): McpServer {
             page: row.page,
             selectionText: row.selectionText,
             noteText: row.noteText,
+          })),
+        },
+      };
+    },
+  );
+
+  registerAppTool(
+    server,
+    "save_highlight",
+    {
+      title: "Save Highlight",
+      description: "Save a text highlight for a document",
+      inputSchema: {
+        documentId: z.string(),
+        page: z.number().min(1),
+        selectionText: z.string().min(1),
+        color: z.string().optional(),
+      },
+      outputSchema: z.object({ id: z.string() }),
+      _meta: { ui: { visibility: ["app"] } },
+    },
+    async ({ documentId, page, selectionText, color }): Promise<CallToolResult> => {
+      const id = await repo.createHighlight({
+        documentId,
+        page,
+        selectionText,
+        color,
+      });
+      return {
+        content: [{ type: "text", text: "Highlight saved." }],
+        structuredContent: { id },
+      };
+    },
+  );
+
+  registerAppTool(
+    server,
+    "list_highlights",
+    {
+      title: "List Highlights",
+      description: "List highlights for a document",
+      inputSchema: {
+        documentId: z.string(),
+      },
+      outputSchema: z.object({
+        highlights: z.array(
+          z.object({
+            id: z.string(),
+            page: z.number(),
+            selectionText: z.string(),
+            color: z.string().nullable().optional(),
+          }),
+        ),
+      }),
+      _meta: { ui: { visibility: ["app"] } },
+    },
+    async ({ documentId }): Promise<CallToolResult> => {
+      const rows = await repo.listHighlights(documentId);
+      return {
+        content: [{ type: "text", text: `Loaded ${rows.length} highlights.` }],
+        structuredContent: {
+          highlights: rows.map((row: { id: string; page: number; selectionText: string; color: string | null }) => ({
+            id: row.id,
+            page: row.page,
+            selectionText: row.selectionText,
+            color: row.color,
           })),
         },
       };

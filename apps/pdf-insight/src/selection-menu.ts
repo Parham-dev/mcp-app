@@ -4,11 +4,12 @@ export type SelectionMenuOptions = {
   menuEl: HTMLDivElement;
   onExplain: (text: string) => void | Promise<void>;
   onNote?: (text: string) => void | Promise<void>;
+  onHighlight?: (text: string) => void | Promise<void>;
   onSelectionChange?: (text: string) => void;
 };
 
 export function createSelectionMenu(options: SelectionMenuOptions) {
-  const { viewerEl, mainEl, menuEl, onExplain, onNote, onSelectionChange } = options;
+  const { viewerEl, mainEl, menuEl, onExplain, onNote, onHighlight, onSelectionChange } = options;
   let selectionText = "";
   let selectionUpdateTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -100,6 +101,10 @@ export function createSelectionMenu(options: SelectionMenuOptions) {
       if (!selectionText) return;
       hideMenu();
       await onNote?.(selectionText);
+    } else if (action === "highlight") {
+      if (!selectionText) return;
+      hideMenu();
+      await onHighlight?.(selectionText);
     } else {
       hideMenu();
     }

@@ -1,0 +1,118 @@
+/* Toolbar */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  background: var(--bg000);
+  border-bottom: 1px solid var(--bg200);
+  flex-shrink: 0;
+  gap: 0.5rem;
+  height: 48px;
+  box-sizing: border-box;
+}
+
+.toolbar-left {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.pdf-title {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.9rem;
+  display: block;
+  max-width: 100%;
+}
+
+.toolbar-center {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+/* Page Navigation */
+.page-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.page-input {
+  width: 50px;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--bg200);
+  border-radius: 4px;
+  font-size: 0.85rem;
+  text-align: center;
+  background: var(--bg000);
+  color: var(--text000);
+}
+
+.page-input:focus {
+  outline: none;
+  border-color: var(--text100);
+}
+
+.page-input::-webkit-outer-spin-button,
+.page-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.page-input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.total-pages {
+  font-size: 0.85rem;
+  color: var(--text100);
+  white-space: nowrap;
+}
+
+.nav-btn,
+.zoom-btn,
+.fullscreen-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--bg200);
+  border-radius: 4px;
+  background: var(--bg000);
+  color: var(--text000);
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.15s ease;
+}
+
+.nav-btn:hover:not(:disabled),
+.zoom-btn:hover:not(:disabled),
+.fullscreen-btn:hover {
+  background: var(--bg100);
+  border-color: var(--bg300);
+}
+
+.nav-btn:disabled,
+.zoom-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.zoom-level {
+  font-size: 0.8rem;
+  color: var(--text100);
+  min-width: 50px;
+  text-align: center;
+}

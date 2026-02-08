@@ -1,0 +1,35 @@
+:root {
+  color-scheme: light dark;
+
+  /* Background colors */
+  --bg000: light-dark(#ffffff, #1a1a1a);
+  --bg100: light-dark(#f5f5f5, #252525);
+  --bg200: light-dark(#e0e0e0, #333333);
+  --bg300: light-dark(#cccccc, #444444);
+
+  /* Text colors */
+  --text000: light-dark(#1a1a1a, #f0f0f0);
+  --text100: light-dark(#666666, #aaaaaa);
+  --text200: light-dark(#999999, #888888);
+
+  /* Shadows */
+  --shadow-page: light-dark(0 2px 8px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.4));
+  --selection-bg: light-dark(rgba(0, 0, 255, 0.3), rgba(100, 150, 255, 0.4));
+}
+
+body {
+  overscroll-behavior-x: none;
+  display: flex;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+  background: var(--bg100);
+  color: var(--text000);
+  overflow: hidden; /* Prevent scrollbars in inline mode - we request exact size */
+  border-radius: 0.75rem;
+  border: 1px solid var(--bg200);
+}

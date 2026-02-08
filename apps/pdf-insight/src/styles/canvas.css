@@ -1,0 +1,99 @@
+/* Viewer Container */
+.viewer {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: visible;
+}
+
+/* Single Page Canvas Container */
+.canvas-container {
+  flex: 1;
+  overflow: visible;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 1rem;
+  background: var(--bg200);
+}
+
+.page-wrapper {
+  position: relative;
+  box-shadow: var(--shadow-page);
+  background: white;
+}
+
+#pdf-canvas {
+  display: block;
+}
+
+/* Text Layer for Selection */
+.text-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  opacity: 0.2;
+  line-height: 1;
+  text-size-adjust: none;
+  forced-color-adjust: none;
+  transform-origin: 0 0;
+  z-index: 2;
+}
+
+.text-layer span,
+.text-layer br {
+  color: transparent;
+  position: absolute;
+  white-space: pre;
+  cursor: text;
+  transform-origin: 0% 0%;
+}
+
+.text-layer ::selection {
+  background: var(--selection-bg);
+}
+
+.highlight-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.highlight-layer .highlight-rect {
+  position: absolute;
+  background: rgba(255, 235, 59, 0.4);
+  border-radius: 2px;
+}
+
+.text-layer > span {
+  pointer-events: all;
+}
+
+/* Fullscreen mode */
+.main.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  overflow: hidden; /* No scrolling on main - only canvas-container scrolls */
+  border-radius: 0;
+  border: none;
+}
+
+.main.fullscreen .viewer {
+  min-height: 0; /* Allow flex item to shrink below content size */
+}
+
+.main.fullscreen .canvas-container {
+  min-height: 0; /* Allow flex item to shrink below content size */
+  overflow: auto; /* Scroll within the document area only */
+}
