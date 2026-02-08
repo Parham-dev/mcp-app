@@ -310,3 +310,35 @@ body {
   min-height: 0; /* Allow flex item to shrink below content size */
   overflow: auto; /* Scroll within the document area only */
 }
+
+.selection-menu {
+  position: absolute;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.4rem;
+  background: var(--bg000);
+  border: 1px solid var(--bg200);
+  border-radius: 0.75rem;
+  box-shadow: var(--shadow-page);
+  z-index: 2000;
+}
+
+.selection-menu button {
+  border: 1px solid var(--bg200);
+  background: var(--bg000);
+  color: var(--text000);
+  padding: 0.35rem 0.6rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.selection-menu button:hover:not(.disabled) {
+  background: var(--bg100);
+}
+
+.selection-menu button.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
