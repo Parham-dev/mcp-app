@@ -24,7 +24,21 @@ MCP App Store is a **hosting platform** that lets you:
 |-----|----------|-------------|
 | 🍳 [Recipe Remix](apps/recipe-remix/) | `/recipe-remix/mcp` | AI recipe assistant with beautiful UI |
 | 📊 [Allocation Remix](apps/allocation-remix/) | `/allocation-remix/mcp` | Dynamic resource allocation visualizer |
-| 📄 [PDF Insight](apps/pdf-insight/) | `/pdf-insight/mcp` | AI-assisted PDF reader with highlight actions |
+| 📄 [PDF Insight](apps/pdf-insight/) | `/pdf-insight/mcp` | Interactive PDF viewer (example-based) |
+
+## 📄 Document Reader Vision (PDF Insight)
+
+Goal: a scalable, client-agnostic document reader that works inside any AI host. Users can open documents, read them in-app, and use AI actions (explain, summarize, translate, annotate) with persistent memory and personalization.
+
+MVP approach:
+- Local-only storage for notes and settings
+- Single-document focus with selection-based quick actions
+- Build for portability, then swap the storage/auth layer
+
+Scale-up plan:
+- Supabase for auth, database, and file storage
+- Multi-device sync and team collaboration
+- Vector memory for semantic search across notes and documents
 
 ## 🔌 Connect to Claude Desktop / VS Code
 
@@ -175,11 +189,12 @@ railway up
 ## 🎨 Tech Stack
 
 - **Server**: Express + MCP SDK with StreamableHTTPServerTransport
-- **Frontend**: React 18, TypeScript, CSS Modules
+- **Frontend**: React 18, TypeScript, CSS Modules (plus vanilla for example-based apps)
 - **Icons**: Lucide React (tree-shakable SVGs)
 - **Animations**: Lottie React
 - **Bundler**: Vite + vite-plugin-singlefile
 - **Deployment**: Railway
+- **Planned**: Supabase (Auth, Postgres, Storage)
 
 ## 📜 MCP Protocol
 
@@ -202,6 +217,10 @@ Each app defines its own tools and resources, the platform handles:
 - [ ] Usage analytics
 - [ ] Rate limiting
 - [ ] App versioning
+- [ ] PDF Insight: configurable quick actions (explain/summarize/translate)
+- [ ] PDF Insight: notes + highlights (local MVP)
+- [ ] PDF Insight: Supabase-backed auth, DB, and storage
+- [ ] PDF Insight: vector search across notes/documents
 
 ## 📝 License
 
