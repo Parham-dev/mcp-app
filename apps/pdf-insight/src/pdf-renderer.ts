@@ -14,8 +14,9 @@ export function createPdfRenderer(params: {
   textLayerEl: HTMLElement;
   onRendered?: (state: { page: number; totalPages: number; scale: number }) => void;
   onError?: (message: string) => void;
+  onRenderWarning?: (message: string) => void;
 }) {
-  const { canvasEl, textLayerEl, onRendered, onError } = params;
+  const { canvasEl, textLayerEl, onRendered, onError, onRenderWarning } = params;
 
   let pdfDocument: pdfjsLib.PDFDocumentProxy | null = null;
   let currentPage = 1;
@@ -146,6 +147,12 @@ export function createPdfRenderer(params: {
       } as unknown as ConstructorParameters<typeof TextLayer>[0]);
       await textLayer.render();
 
+      if (isCanvasBlankOrBlack(canvasEl)) {
+        onRenderWarning?.(
+          "This page rendered as a blank/black canvas. The PDF may be scanned, encrypted, or use unsupported features.",
+        );
+      }
+
       onRendered?.({ page: currentPage, totalPages, scale });
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
@@ -173,4 +180,30 @@ export function createPdfRenderer(params: {
     getPageText,
     setScale,
   };
+}
+
+function isCanvasBlankOrBlack(canvas: HTMLCanvasElement): boolean {
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return false;
+
+  const samplePoints = 16;
+  const width = canvas.width;
+  const height = canvas.height;
+  if (width === 0 || height === 0) return false;
+
+  let nonBlackOrTransparent = 0;
+  for (let i = 0; i < samplePoints; i++) {
+    const x = Math.floor(((i + 1) / (samplePoints + 1)) * width);
+    const y = Math.floor(((i + 1) / (samplePoints + 1)) * height);
+    const data = ctx.getImageData(x, y, 1, 1).data;
+    const [r, g, b, a] = data;
+    const isTransparent = a === 0;
+    const isBlack = r === 0 && g === 0 && b === 0;
+    if (!isTransparent && !isBlack) {
+      nonBlackOrTransparent += 1;
+      break;
+    }
+  }
+
+  return nonBlackOrTransparent === 0;
 }

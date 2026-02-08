@@ -18,6 +18,8 @@ import {
   updateProgress,
   updateFullscreenButton,
   applySafeAreaInsets,
+  showRenderWarning,
+  hideRenderWarning,
 } from "./ui";
 import "./global.css";
 import "./mcp-app.css";
@@ -56,6 +58,9 @@ const renderer = createPdfRenderer({
     log.error("Error rendering page:", message);
     showError("Failed to render page.");
   },
+  onRenderWarning: (message) => {
+    showRenderWarning(message);
+  },
 });
 
 const selectionMenu = createSelectionMenu({
@@ -76,6 +81,17 @@ const updatePageContext = createContextUpdater({
   renderer,
   selectionMenu,
   getPdfMeta: () => ({ pdfUrl, pdfTitle }),
+});
+
+els.renderWarningCloseEl.addEventListener("click", () => {
+  hideRenderWarning();
+});
+
+els.renderWarningOpenEl.addEventListener("click", () => {
+  hideRenderWarning();
+  if (pdfUrl) {
+    app.openLink({ url: pdfUrl });
+  }
 });
 
 function requestFitToContent() {

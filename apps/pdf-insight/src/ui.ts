@@ -21,6 +21,10 @@ export const els = {
   progressBarEl: document.getElementById("progress-bar") as HTMLElement,
   progressTextEl: document.getElementById("progress-text") as HTMLElement,
   selectionMenuEl: document.getElementById("selection-menu") as HTMLDivElement,
+  renderWarningEl: document.getElementById("render-warning") as HTMLDivElement,
+  renderWarningMessageEl: document.getElementById("render-warning-message") as HTMLParagraphElement,
+  renderWarningOpenEl: document.getElementById("render-warning-open") as HTMLButtonElement,
+  renderWarningCloseEl: document.getElementById("render-warning-close") as HTMLButtonElement,
 };
 
 export function showLoading(text: string) {
@@ -86,4 +90,13 @@ export function applySafeAreaInsets(insets: {
   els.mainEl.style.paddingRight = `${insets.right}px`;
   els.mainEl.style.paddingBottom = `${insets.bottom}px`;
   els.mainEl.style.paddingLeft = `${insets.left}px`;
+}
+
+export function showRenderWarning(message: string) {
+  els.renderWarningMessageEl.textContent = message;
+  els.renderWarningEl.style.display = "flex";
+}
+
+export function hideRenderWarning() {
+  els.renderWarningEl.style.display = "none";
 }

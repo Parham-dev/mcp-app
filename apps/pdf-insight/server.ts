@@ -57,8 +57,45 @@ export const allowedRemoteOrigins = new Set([
   "https://zenodo.org",
 ]);
 
-/** Allowed local file paths (empty by default in this app) */
+/** Allowed local file paths (populated from env) */
 export const allowedLocalFiles = new Set<string>();
+
+function addLocalFile(filePath: string) {
+  const absolutePath = path.resolve(filePath.trim());
+  if (!absolutePath) return;
+  if (fs.existsSync(absolutePath)) {
+    allowedLocalFiles.add(absolutePath);
+  }
+}
+
+function addLocalDirectory(dirPath: string) {
+  const absoluteDir = path.resolve(dirPath.trim());
+  if (!absoluteDir || !fs.existsSync(absoluteDir)) return;
+  const entries = fs.readdirSync(absoluteDir, { withFileTypes: true });
+  for (const entry of entries) {
+    if (!entry.isFile()) continue;
+    if (!entry.name.toLowerCase().endsWith(".pdf")) continue;
+    addLocalFile(path.join(absoluteDir, entry.name));
+  }
+}
+
+function loadLocalPathsFromEnv() {
+  const files = process.env.PDF_LOCAL_FILES;
+  if (files) {
+    for (const filePath of files.split(",")) {
+      addLocalFile(filePath);
+    }
+  }
+
+  const dirs = process.env.PDF_LOCAL_DIRS;
+  if (dirs) {
+    for (const dirPath of dirs.split(",")) {
+      addLocalDirectory(dirPath);
+    }
+  }
+}
+
+loadLocalPathsFromEnv();
 
 const HTML_PATH = path.join(
   import.meta.dirname,

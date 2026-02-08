@@ -342,3 +342,54 @@ body {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+}
+
+.modal {
+  background: var(--bg000);
+  color: var(--text000);
+  border: 1px solid var(--bg200);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  width: min(420px, 90vw);
+  box-shadow: var(--shadow-page);
+}
+
+.modal h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+
+.modal p {
+  margin: 0 0 1rem;
+  font-size: 0.85rem;
+  color: var(--text100);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.modal-actions button {
+  border: 1px solid var(--bg200);
+  background: var(--bg000);
+  color: var(--text000);
+  padding: 0.35rem 0.6rem;
+  border-radius: 0.5rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.modal-actions button:hover {
+  background: var(--bg100);
+}

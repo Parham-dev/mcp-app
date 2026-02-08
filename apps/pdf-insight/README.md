@@ -96,3 +96,17 @@ Higher effort / later:
 ## Notes
 
 This app mirrors the example in `examples/pdf-server` but is evolving toward a full document reader platform.
+
+## Local Files (MVP)
+
+By default, no local PDFs are allowed. You can enable local PDFs by setting one or both env vars:
+
+- `PDF_LOCAL_FILES`: Comma-separated list of absolute file paths
+- `PDF_LOCAL_DIRS`: Comma-separated list of absolute directory paths (all `.pdf` files will be added)
+
+Example:
+
+```bash
+PDF_LOCAL_DIRS="/Users/parham/Documents"
+PDF_LOCAL_FILES="/Users/parham/Documents/P45.pdf"
+```

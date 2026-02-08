@@ -81,6 +81,20 @@
       <button data-action="copy" class="disabled">Copy</button>
     </div>
 
+    <div id="render-warning" class="modal-backdrop" style="display: none">
+      <div class="modal">
+        <h2>PDF Render Warning</h2>
+        <p id="render-warning-message">
+          This PDF did not render correctly. It may be a scanned image, encrypted,
+          or use features not supported by the viewer.
+        </p>
+        <div class="modal-actions">
+          <button id="render-warning-open">Open Original</button>
+          <button id="render-warning-close">Close</button>
+        </div>
+      </div>
+    </div>
+
     <script type="module" src="./src/mcp-app.ts"></script>
   </body>
 </html>
