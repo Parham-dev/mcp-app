@@ -464,3 +464,23 @@ body {
 .modal-actions button:hover {
   background: var(--bg100);
 }
+
+.note-dialog-input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.5rem;
+  border: 1px solid var(--bg200);
+  border-radius: 0.5rem;
+  background: var(--bg000);
+  color: var(--text000);
+  font-size: 0.85rem;
+  font-family: inherit;
+  resize: vertical;
+  margin-bottom: 1rem;
+}
+
+.note-dialog-input:focus {
+  outline: none;
+  border-color: var(--text100);
+}

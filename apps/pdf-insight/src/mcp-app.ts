@@ -22,6 +22,7 @@ import {
   hideRenderWarning,
   renderNotesList,
   setNotesStatus,
+  showNoteDialog,
 } from "./ui";
 import "./global.css";
 import "./mcp-app.css";
@@ -85,7 +86,7 @@ const selectionMenu = createSelectionMenu({
   },
   onNote: async (text) => {
     if (!documentId) return;
-    const noteText = window.prompt("Save note", text);
+    const noteText = await showNoteDialog(text);
     if (!noteText) return;
     const { currentPage } = renderer.getState();
     setNotesStatus("Saving...", "info");
@@ -107,18 +108,17 @@ const selectionMenu = createSelectionMenu({
       return;
     }
 
+    // Optimistic update — add note to local cache immediately
     const payload = result.structuredContent as { id?: string } | null;
-    if (payload?.id) {
-      notesCache = [
-        { id: payload.id, page: currentPage, noteText, selectionText: text },
-        ...notesCache,
-      ];
-      renderNotesForPage();
-    }
+    const noteId = payload?.id ?? crypto.randomUUID();
+    notesCache = [
+      { id: noteId, page: currentPage, noteText, selectionText: text },
+      ...notesCache,
+    ];
+    renderNotesForPage();
 
     setNotesStatus("Saved", "success");
     setTimeout(() => setNotesStatus("", "none"), 2000);
-    await loadNotes();
   },
   onSelectionChange: () => updatePageContext(),
 });
@@ -319,7 +319,8 @@ els.pageInputEl.addEventListener("keydown", (e) => {
 
 // Keyboard navigation
 document.addEventListener("keydown", (e) => {
-  if (document.activeElement === els.pageInputEl) return;
+  const active = document.activeElement;
+  if (active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement) return;
   if ((e.ctrlKey || e.metaKey) && e.key === "0") {
     renderer.resetZoom();
     e.preventDefault();

@@ -24,7 +24,7 @@ MCP App Store is a **hosting platform** that lets you:
 |-----|----------|-------------|
 | 🍳 [Recipe Remix](apps/recipe-remix/) | `/recipe-remix/mcp` | AI recipe assistant with beautiful UI |
 | 📊 [Allocation Remix](apps/allocation-remix/) | `/allocation-remix/mcp` | Dynamic resource allocation visualizer |
-| 📄 [PDF Insight](apps/pdf-insight/) | `/pdf-insight/mcp` | Interactive PDF viewer (example-based) |
+| 📄 [PDF Insight](apps/pdf-insight/) | `/pdf-insight/mcp` | AI document reader with notes and selection actions |
 
 ## 📄 Document Reader Vision (PDF Insight)
 
@@ -217,8 +217,11 @@ Each app defines its own tools and resources, the platform handles:
 - [ ] Usage analytics
 - [ ] Rate limiting
 - [ ] App versioning
-- [ ] PDF Insight: configurable quick actions (explain/summarize/translate)
-- [ ] PDF Insight: notes + highlights (local MVP)
+- [x] PDF Insight: notes with inline save dialog (local SQLite)
+- [x] PDF Insight: test suite (Vitest — URL helpers + DB repository)
+- [ ] PDF Insight: highlights UI (DB schema ready)
+- [ ] PDF Insight: configurable quick actions (summarize/translate/define)
+- [ ] PDF Insight: per-profile preferences and per-document settings
 - [ ] PDF Insight: Supabase-backed auth, DB, and storage
 - [ ] PDF Insight: vector search across notes/documents
 

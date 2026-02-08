@@ -2,13 +2,16 @@
 
 Client-agnostic document reader designed to run inside MCP-enabled AI hosts. The app focuses on reading and understanding documents with fast selection-based actions (explain, summarize, translate, annotate), and a persistent memory layer that works across AI clients.
 
-## Current State (MVP)
+## Current State
 
-- Example-based PDF viewer (from `examples/pdf-server`)
-- Remote URL loading via allowlist
+- PDF viewer with remote URL loading via allowlist and local file support
 - Chunked PDF streaming via an app-only tool
-- Text selection menu (vertical) with actions: **Explain**, **Save Note**
-- Notes panel (local, per document)
+- Text selection menu with actions: **Explain**, **Save Note**
+- Notes panel with per-page filtering and optimistic UI updates
+- SQLite database (Drizzle ORM) for documents, notes, highlights, profiles, document settings
+- Custom inline dialogs (no browser modals — works in sandboxed MCP App iframes)
+- Keyboard navigation with proper focus management (shortcuts disabled when typing)
+- Test suite (Vitest) covering URL validation helpers and database repository
 
 ## Tools
 
@@ -34,16 +37,20 @@ Target users:
 
 ## MVP → Scale Plan (Implementation Order)
 
-1. **MVP Core (now)**
-   - PDF URL loading
-   - Selection-based quick actions (Explain active)
-   - Local-only state (no auth)
+1. **MVP Core** ~~(done)~~
+   - PDF URL loading + local file support
+   - Selection-based quick actions (Explain, Save Note)
+   - Local-only state (SQLite, no auth)
    - App works in any MCP host
 
-2. **Local Notes + Personalization**
-   - Local DB for notes/highlights and settings
-   - Per-profile preferences (summary style, language, tone)
-   - Per-document overrides
+2. **Local Notes + Personalization** (in progress)
+   - [x] Local DB for notes (SQLite + Drizzle ORM)
+   - [x] Save Note action with inline dialog
+   - [x] Notes panel with per-page filtering
+   - [x] Test suite (Vitest) for server helpers + DB repository
+   - [ ] Highlights (DB schema ready, UI not wired)
+   - [ ] Per-profile preferences (summary style, language, tone)
+   - [ ] Per-document settings overrides
 
 3. **Action System**
    - Configurable action menu (user-defined quick actions)

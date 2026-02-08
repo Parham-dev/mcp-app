@@ -95,6 +95,17 @@
       <button data-action="define" class="disabled">Define</button>
     </div>
 
+    <div id="note-dialog" class="modal-backdrop" style="display: none">
+      <div class="modal">
+        <h2>Save Note</h2>
+        <textarea id="note-dialog-input" class="note-dialog-input" rows="3" placeholder="Enter your note..."></textarea>
+        <div class="modal-actions">
+          <button id="note-dialog-cancel">Cancel</button>
+          <button id="note-dialog-save">Save</button>
+        </div>
+      </div>
+    </div>
+
     <div id="render-warning" class="modal-backdrop" style="display: none">
       <div class="modal">
         <h2>PDF Render Warning</h2>

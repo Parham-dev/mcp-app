@@ -33,6 +33,8 @@
     "serve:prod": "tsx main.ts",
     "start": "npm run build && npm run serve:prod",
     "dev": "cross-env NODE_ENV=development concurrently 'npm run watch' 'npm run serve'",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
@@ -51,8 +53,8 @@
     "zod": "^4.1.13"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.19",
     "@types/better-sqlite3": "^7.6.9",
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.0",
     "@types/node": "22.10.0",
     "@types/react": "^19.2.2",
@@ -63,6 +65,7 @@
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vite": "^6.0.0",
-    "vite-plugin-singlefile": "^2.3.0"
+    "vite-plugin-singlefile": "^2.3.0",
+    "vitest": "^4.0.18"
   }
 }

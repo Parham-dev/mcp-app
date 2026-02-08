@@ -29,6 +29,10 @@ export const els = {
   notesCountEl: document.getElementById("notes-count") as HTMLSpanElement,
   notesPageEl: document.getElementById("notes-page") as HTMLSpanElement,
   notesStatusEl: document.getElementById("notes-status") as HTMLSpanElement,
+  noteDialogEl: document.getElementById("note-dialog") as HTMLDivElement,
+  noteDialogInputEl: document.getElementById("note-dialog-input") as HTMLTextAreaElement,
+  noteDialogSaveEl: document.getElementById("note-dialog-save") as HTMLButtonElement,
+  noteDialogCancelEl: document.getElementById("note-dialog-cancel") as HTMLButtonElement,
 };
 
 export function showLoading(text: string) {
@@ -134,6 +138,46 @@ export function renderNotesList(
       return `<div class="notes-item">${selection}<div>${note.noteText}</div></div>`;
     })
     .join("");
+}
+
+export function showNoteDialog(selectionText: string): Promise<string | null> {
+  return new Promise((resolve) => {
+    els.noteDialogInputEl.value = selectionText;
+    els.noteDialogEl.style.display = "flex";
+    els.noteDialogInputEl.focus();
+
+    function cleanup() {
+      els.noteDialogSaveEl.removeEventListener("click", onSave);
+      els.noteDialogCancelEl.removeEventListener("click", onCancel);
+      els.noteDialogInputEl.removeEventListener("keydown", onKeydown);
+      els.noteDialogEl.style.display = "none";
+    }
+
+    function onSave() {
+      const value = els.noteDialogInputEl.value.trim();
+      cleanup();
+      resolve(value || null);
+    }
+
+    function onCancel() {
+      cleanup();
+      resolve(null);
+    }
+
+    function onKeydown(e: KeyboardEvent) {
+      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        onSave();
+      } else if (e.key === "Escape") {
+        e.preventDefault();
+        onCancel();
+      }
+    }
+
+    els.noteDialogSaveEl.addEventListener("click", onSave);
+    els.noteDialogCancelEl.addEventListener("click", onCancel);
+    els.noteDialogInputEl.addEventListener("keydown", onKeydown);
+  });
 }
 
 export function setNotesStatus(
