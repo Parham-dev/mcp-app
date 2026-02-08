@@ -294,6 +294,7 @@ els.canvasContainerEl.addEventListener(
   { passive: false },
 );
 
+
 // Tool results
 app.ontoolresult = async (result) => {
   log.info("Received tool result:", result);

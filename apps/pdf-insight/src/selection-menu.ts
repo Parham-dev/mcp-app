@@ -88,15 +88,6 @@ export function createSelectionMenu(options: SelectionMenuOptions) {
     hideMenu();
   });
 
-  viewerEl.addEventListener("contextmenu", (event) => {
-    const text = getSelectionText();
-    if (text.length >= 3 && selectionWithinViewer()) {
-      event.preventDefault();
-      selectionText = text;
-      positionMenu();
-    }
-  });
-
   menuEl.addEventListener("click", async (event) => {
     const target = event.target as HTMLElement;
     if (target.tagName !== "BUTTON") return;
