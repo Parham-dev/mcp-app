@@ -24,6 +24,8 @@ import type {
   ReadResourceResult,
 } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
+import { createDb } from "./db/client.js";
+import { createRepository } from "./db/repository.js";
 
 export const appId = "pdf-insight";
 export const appName = "PDF Viewer";
@@ -236,6 +238,8 @@ export async function readPdfRange(
 
 export function createServer(): McpServer {
   const server = new McpServer({ name: "PDF Server", version: "2.0.0" });
+  const db = createDb();
+  const repo = createRepository(db);
 
   // Tool: list_pdfs - List available PDFs (local files + allowed origins)
   server.tool(
@@ -359,6 +363,7 @@ export function createServer(): McpServer {
       outputSchema: z.object({
         url: z.string(),
         initialPage: z.number(),
+        documentId: z.string(),
       }),
       _meta: { ui: { resourceUri: RESOURCE_URI } },
     },
@@ -373,14 +378,86 @@ export function createServer(): McpServer {
         };
       }
 
+      const documentId = await repo.upsertDocument({
+        title: undefined,
+        sourceUrl: normalized,
+      });
+
       return {
         content: [{ type: "text", text: `Displaying PDF: ${normalized}` }],
         structuredContent: {
           url: normalized,
           initialPage: page,
+          documentId,
         },
         _meta: {
           viewUUID: randomUUID(),
+        },
+      };
+    },
+  );
+
+  registerAppTool(
+    server,
+    "save_note",
+    {
+      title: "Save Note",
+      description: "Save a note for a document selection",
+      inputSchema: {
+        documentId: z.string(),
+        page: z.number().min(1),
+        selectionText: z.string().optional(),
+        noteText: z.string().min(1),
+      },
+      outputSchema: z.object({ id: z.string() }),
+      _meta: { ui: { visibility: ["app"] } },
+    },
+    async ({ documentId, page, selectionText, noteText }): Promise<CallToolResult> => {
+      const id = await repo.createNote({
+        documentId,
+        page,
+        selectionText,
+        noteText,
+      });
+      return {
+        content: [{ type: "text", text: "Note saved." }],
+        structuredContent: { id },
+      };
+    },
+  );
+
+  registerAppTool(
+    server,
+    "list_notes",
+    {
+      title: "List Notes",
+      description: "List notes for a document",
+      inputSchema: {
+        documentId: z.string(),
+      },
+      outputSchema: z.object({
+        notes: z.array(
+          z.object({
+            id: z.string(),
+            page: z.number(),
+            selectionText: z.string().nullable().optional(),
+            noteText: z.string(),
+          }),
+        ),
+      }),
+      _meta: { ui: { visibility: ["app"] } },
+    },
+    async ({ documentId }): Promise<CallToolResult> => {
+      const rows = await repo.listNotes(documentId);
+      return {
+        content: [{ type: "text", text: `Loaded ${rows.length} notes.` }],
+        structuredContent: {
+          notes: rows.map((row: { id: string; page: number; selectionText: string | null; noteText: string }) => ({
+            id: row.id,
+            page: row.page,
+            selectionText: row.selectionText,
+            noteText: row.noteText,
+          })),
         },
       };
     },

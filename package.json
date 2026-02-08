@@ -38,8 +38,10 @@
   "dependencies": {
     "@modelcontextprotocol/ext-apps": "^1.0.0",
     "@modelcontextprotocol/sdk": "^1.24.0",
+    "better-sqlite3": "^11.10.0",
     "chart.js": "^4.4.0",
     "cors": "^2.8.5",
+    "drizzle-orm": "^0.40.0",
     "express": "^5.1.0",
     "lottie-react": "^2.4.1",
     "lucide-react": "^0.563.0",
@@ -50,6 +52,7 @@
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
+    "@types/better-sqlite3": "^7.6.9",
     "@types/express": "^5.0.0",
     "@types/node": "22.10.0",
     "@types/react": "^19.2.2",

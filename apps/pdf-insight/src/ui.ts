@@ -25,6 +25,8 @@ export const els = {
   renderWarningMessageEl: document.getElementById("render-warning-message") as HTMLParagraphElement,
   renderWarningOpenEl: document.getElementById("render-warning-open") as HTMLButtonElement,
   renderWarningCloseEl: document.getElementById("render-warning-close") as HTMLButtonElement,
+  notesListEl: document.getElementById("notes-list") as HTMLDivElement,
+  notesCountEl: document.getElementById("notes-count") as HTMLSpanElement,
 };
 
 export function showLoading(text: string) {
@@ -99,4 +101,23 @@ export function showRenderWarning(message: string) {
 
 export function hideRenderWarning() {
   els.renderWarningEl.style.display = "none";
+}
+
+export function renderNotesList(
+  notes: Array<{ id: string; page: number; noteText: string; selectionText?: string | null }>,
+) {
+  els.notesCountEl.textContent = String(notes.length);
+  if (notes.length === 0) {
+    els.notesListEl.innerHTML = '<div class="notes-empty">No notes yet.</div>';
+    return;
+  }
+
+  els.notesListEl.innerHTML = notes
+    .map((note) => {
+      const selection = note.selectionText
+        ? `<strong>Page ${note.page} · Selection</strong><div>${note.selectionText}</div>`
+        : `<strong>Page ${note.page}</strong>`;
+      return `<div class="notes-item">${selection}<div>${note.noteText}</div></div>`;
+    })
+    .join("");
 }

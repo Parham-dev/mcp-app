@@ -70,15 +70,25 @@
             <div id="text-layer" class="text-layer"></div>
           </div>
         </div>
+
+        <div class="notes-panel">
+          <div class="notes-header">
+            <h3>Notes</h3>
+            <span id="notes-count">0</span>
+          </div>
+          <div id="notes-list" class="notes-list">
+            <div class="notes-empty">No notes yet.</div>
+          </div>
+        </div>
       </div>
     </div>
 
     <div id="selection-menu" class="selection-menu" style="display: none">
       <button data-action="explain">Explain</button>
+      <button data-action="note">Save Note</button>
       <button data-action="summarize" class="disabled">Summarize</button>
       <button data-action="translate" class="disabled">Translate</button>
       <button data-action="define" class="disabled">Define</button>
-      <button data-action="copy" class="disabled">Copy</button>
     </div>
 
     <div id="render-warning" class="modal-backdrop" style="display: none">

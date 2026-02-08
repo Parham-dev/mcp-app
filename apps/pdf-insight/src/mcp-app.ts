@@ -20,6 +20,7 @@ import {
   applySafeAreaInsets,
   showRenderWarning,
   hideRenderWarning,
+  renderNotesList,
 } from "./ui";
 import "./global.css";
 import "./mcp-app.css";
@@ -32,6 +33,7 @@ const log = {
 let pdfUrl = "";
 let pdfTitle: string | undefined;
 let viewUUID: string | undefined;
+let documentId: string | undefined;
 let currentDisplayMode: "inline" | "fullscreen" = "inline";
 
 const app = new App(
@@ -72,6 +74,22 @@ const selectionMenu = createSelectionMenu({
       role: "user",
       content: [{ type: "text", text: `Explain the selected text:\n\n${text}` }],
     });
+  },
+  onNote: async (text) => {
+    if (!documentId) return;
+    const noteText = window.prompt("Save note", text);
+    if (!noteText) return;
+    const { currentPage } = renderer.getState();
+    await app.callServerTool({
+      name: "save_note",
+      arguments: {
+        documentId,
+        page: currentPage,
+        selectionText: text,
+        noteText,
+      },
+    });
+    await loadNotes();
   },
   onSelectionChange: () => updatePageContext(),
 });
@@ -200,13 +218,39 @@ function parseToolResult(result: CallToolResult): {
   title?: string;
   pageCount: number;
   initialPage: number;
+  documentId: string;
 } | null {
   return result.structuredContent as {
     url: string;
     title?: string;
     pageCount: number;
     initialPage: number;
+    documentId: string;
   } | null;
+}
+
+async function loadNotes() {
+  if (!documentId) {
+    renderNotesList([]);
+    return;
+  }
+  const result = await app.callServerTool({
+    name: "list_notes",
+    arguments: { documentId },
+  });
+  if (result.isError || !result.structuredContent) {
+    renderNotesList([]);
+    return;
+  }
+  const payload = result.structuredContent as unknown as {
+    notes: Array<{
+      id: string;
+      page: number;
+      noteText: string;
+      selectionText?: string | null;
+    }>;
+  };
+  renderNotesList(payload.notes ?? []);
 }
 
 // UI events
@@ -308,6 +352,7 @@ app.ontoolresult = async (result) => {
   pdfUrl = parsed.url;
   pdfTitle = parsed.title;
   viewUUID = result._meta?.viewUUID ? String(result._meta.viewUUID) : undefined;
+  documentId = parsed.documentId;
 
   const savedPage = loadSavedPage();
   const initialPage =
@@ -325,6 +370,7 @@ app.ontoolresult = async (result) => {
 
     showViewer();
     renderer.renderPage();
+    await loadNotes();
   } catch (err) {
     log.error("Error loading PDF:", err);
     showError(err instanceof Error ? err.message : String(err));

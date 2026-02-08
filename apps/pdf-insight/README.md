@@ -7,7 +7,8 @@ Client-agnostic document reader designed to run inside MCP-enabled AI hosts. The
 - Example-based PDF viewer (from `examples/pdf-server`)
 - Remote URL loading via allowlist
 - Chunked PDF streaming via an app-only tool
-- Text selection menu (vertical) with one active action: **Explain**
+- Text selection menu (vertical) with actions: **Explain**, **Save Note**
+- Notes panel (local, per document)
 
 ## Tools
 
@@ -17,6 +18,10 @@ Client-agnostic document reader designed to run inside MCP-enabled AI hosts. The
   - Opens the PDF viewer UI for a given URL and page
 - `read_pdf_bytes`
   - App-only tool used by the UI to stream PDF bytes in chunks
+- `save_note`
+  - App-only tool to save a note for a document selection
+- `list_notes`
+  - App-only tool to list saved notes for a document
 
 ## Product Vision
 
